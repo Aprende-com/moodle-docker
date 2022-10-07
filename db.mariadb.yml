@@ -9,6 +9,7 @@ services:
     command: >
               --character-set-server=utf8mb4
               --collation-server=utf8mb4_bin
+              --innodb_file_format=barracuda
               --innodb_file_per_table=On
               --wait-timeout=28800
     environment:
@@ -16,3 +17,21 @@ services:
       MYSQL_USER: moodle
       MYSQL_PASSWORD: "m@0dl3ing"
       MYSQL_DATABASE: moodle
+    volumes:
+        - dbdata:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8001:80
+
+volumes:
+  dbdata:
