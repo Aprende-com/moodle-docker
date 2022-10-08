@@ -20,6 +20,11 @@ services:
     volumes:
         - dbdata:/var/lib/mysql
 
+  cron:
+    image: alpine/curl:latest
+    restart: "always"
+    command: [ "/bin/sh", "-c", "while true; do sleep 5; curl -s 'http://webserver:80/admin/cron.php'; sleep 55; done" ]
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma

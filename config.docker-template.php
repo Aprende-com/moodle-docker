@@ -12,13 +12,8 @@ $CFG->dbuser    = getenv('MOODLE_DOCKER_DBUSER');
 $CFG->dbpass    = getenv('MOODLE_DOCKER_DBPASS');
 $CFG->prefix    = 'm_';
 $CFG->dboptions = ['dbcollation' => getenv('MOODLE_DOCKER_DBCOLLATION')];
+$CFG->wwwroot = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '') . '://' . $_SERVER['HTTP_HOST'];
 
-$host = 'localhost';
-if (!empty(getenv('MOODLE_DOCKER_WEB_HOST'))) {
-    $host = getenv('MOODLE_DOCKER_WEB_HOST');
-}
-$CFG->wwwroot   = "http://{$host}";
-$port = getenv('MOODLE_DOCKER_WEB_PORT');
 if (!empty($port)) {
     // Extract port in case the format is bind_ip:port.
     $parts = explode(':', $port);
@@ -27,6 +22,7 @@ if (!empty($port)) {
         $CFG->wwwroot .= ":{$port}";
     }
 }
+
 $CFG->dataroot  = '/var/www/moodledata';
 $CFG->admin     = 'admin';
 $CFG->directorypermissions = 0777;
@@ -49,7 +45,9 @@ $CFG->phpunit_prefix = 't_';
 define('TEST_EXTERNAL_FILES_HTTP_URL', 'http://exttests:9000');
 define('TEST_EXTERNAL_FILES_HTTPS_URL', 'http://exttests:9000');
 
-$CFG->behat_wwwroot   = 'http://webserver';
+if (substr($_SERVER['REQUEST_URI'], 0, 15) != '/admin/cron.php') {
+    $CFG->behat_wwwroot   = 'http://webserver';
+};
 $CFG->behat_dataroot  = '/var/www/behatdata';
 $CFG->behat_prefix = 'b_';
 $CFG->behat_profiles = array(
