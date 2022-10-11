@@ -1,0 +1,9 @@
+cd ~
+if [ -f ~/moodle-docker/.env ]; then
+    export $(cat ~/moodle-docker/.env | xargs | envsubst)
+else
+    echo "Cannot find .env file."
+fi
+cd ~/moodle-docker
+bin/moodle-docker-compose stop
+echo "User 'start' to get started again."

@@ -1,0 +1,9 @@
+cd ~
+if [ -f ~/moodle-docker/.env ]; then
+    export $(cat ~/moodle-docker/.env | xargs | envsubst)
+else
+    echo "Cannot find .env file."
+fi
+cp ~/moodle-docker/config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
+cd ~/moodle-docker
+bin/moodle-docker-compose up -d

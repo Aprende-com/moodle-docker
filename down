@@ -1,0 +1,11 @@
+cd ~
+if [ -f ~/moodle-docker/.env ]; then
+    export $(cat ~/moodle-docker/.env | xargs | envsubst)
+else
+    echo "Cannot find .env file."
+fi
+cd ~/moodle-docker
+bin/moodle-docker-compose stop
+bin/moodle-docker-compose down --remove-orphans
+docker network prune -f
+echo "Use 'up' to get started again."

@@ -1,0 +1,12 @@
+    phpmyadmin:
+      image: phpmyadmin:latest
+      restart: always
+      container_name: phpmyadmin
+      ports:
+        - 8080:80
+      depends_on:
+        - mariadb
+      environment:
+        - PMA_ARBITRARY=1
+      volumes:
+        - "./docker/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php"

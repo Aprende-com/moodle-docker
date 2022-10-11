@@ -4,6 +4,11 @@ services:
     environment:
       MOODLE_DOCKER_DBTYPE: mariadb
       MOODLE_DOCKER_DBCOLLATION: utf8mb4_bin
+    command: ["sh", "-c", "pwd", "&&", "bash"]
+#    command: ["php", "admin/cli/install.php", "--lang=\"en\"", "--wwwroot=\"https://localhost\"", "--dataroot=\"/var/www/moodledata/\"", "--dbtype=\"${MOODLE_DOCKER_DB}\"", "--dbname=\"moodle\"", "--dbuser=\"moodle\"", "--dbpass=\"m@0dl3ing\"", "--dbhost=\"db\"", "--fullname=\"Aprende 3.11 Local DEV\"", "--shortname=\"Aprende DEV\"", "--adminuser=\"aadmin\"", "--adminpass=\"Aprende@2\"", "--agree-license", "--allow-unstable", "--non-interactive", "--adminemail=\"admin@localhost.local\""]
+    depends_on:
+      - "db"
+
   db:
     image: mariadb:${MOODLE_DOCKER_DB_VERSION:-10.7}
     command: >
@@ -37,6 +42,8 @@ services:
     restart: always
     ports:
       - 8001:80
+    depends_on:
+      - "db"
 
 volumes:
   dbdata:
