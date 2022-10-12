@@ -4,6 +4,7 @@ if [ -f ~/moodle-docker/.env ]; then
 else
     echo "Cannot find .env file."
 fi
-cp ~/moodle-docker/config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
+sudo cp ~/moodle-docker/config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
+sudo cp ~/moodle-docker/mdl-init.sh $MOODLE_DOCKER_WWWROOT/
 cd ~/moodle-docker
 bin/moodle-docker-compose up -d

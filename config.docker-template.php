@@ -12,14 +12,18 @@ $CFG->dbuser    = getenv('MOODLE_DOCKER_DBUSER');
 $CFG->dbpass    = getenv('MOODLE_DOCKER_DBPASS');
 $CFG->prefix    = 'm_';
 $CFG->dboptions = ['dbcollation' => getenv('MOODLE_DOCKER_DBCOLLATION')];
-$CFG->wwwroot = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '') . '://' . $_SERVER['HTTP_HOST'];
 
-if (!empty($port)) {
-    // Extract port in case the format is bind_ip:port.
-    $parts = explode(':', $port);
-    $port = end($parts);
-    if ((string)(int)$port === (string)$port) { // Only if it's int value.
-        $CFG->wwwroot .= ":{$port}";
+if (php_sapi_name() == "cli") {
+    $CFG->wwwroot = "http://localhost:8000";
+} else {
+    $CFG->wwwroot = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '') . '://' . $_SERVER['HTTP_HOST'];
+    if (!empty($port)) {
+        // Extract port in case the format is bind_ip:port.
+        $parts = explode(':', $port);
+        $port = end($parts);
+        if ((string)(int)$port === (string)$port) { // Only if it's int value.
+            $CFG->wwwroot .= ":{$port}";
+        }
     }
 }
 
@@ -39,6 +43,10 @@ $CFG->allowthemechangeonurl = 1;
 $CFG->passwordpolicy = 0;
 $CFG->cronclionly = 0;
 $CFG->pathtophp = '/usr/local/bin/php';
+$CFG->pathtogs = '/usr/bin/gs';
+$CFG->pathtodu = '/usr/bin/du';
+// TODO: Missing from image: $CFG->pathtopython = '/usr/bin/python2.7'
+
 
 $CFG->phpunit_dataroot  = '/var/www/phpunitdata';
 $CFG->phpunit_prefix = 't_';

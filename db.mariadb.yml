@@ -4,13 +4,13 @@ services:
     environment:
       MOODLE_DOCKER_DBTYPE: mariadb
       MOODLE_DOCKER_DBCOLLATION: utf8mb4_bin
-    command: ["sh", "-c", "pwd", "&&", "bash"]
-#    command: ["php", "admin/cli/install.php", "--lang=\"en\"", "--wwwroot=\"https://localhost\"", "--dataroot=\"/var/www/moodledata/\"", "--dbtype=\"${MOODLE_DOCKER_DB}\"", "--dbname=\"moodle\"", "--dbuser=\"moodle\"", "--dbpass=\"m@0dl3ing\"", "--dbhost=\"db\"", "--fullname=\"Aprende 3.11 Local DEV\"", "--shortname=\"Aprende DEV\"", "--adminuser=\"aadmin\"", "--adminpass=\"Aprende@2\"", "--agree-license", "--allow-unstable", "--non-interactive", "--adminemail=\"admin@localhost.local\""]
+#    command: ["bash","mdl-init.sh"]
     depends_on:
       - "db"
 
   db:
     image: mariadb:${MOODLE_DOCKER_DB_VERSION:-10.7}
+    entrypoint: mysqld_safe --skip-grant-tables --user=mysql
     command: >
               --character-set-server=utf8mb4
               --collation-server=utf8mb4_bin
@@ -22,13 +22,16 @@ services:
       MYSQL_USER: moodle
       MYSQL_PASSWORD: "m@0dl3ing"
       MYSQL_DATABASE: moodle
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
     volumes:
         - dbdata:/var/lib/mysql
 
   cron:
     image: alpine/curl:latest
     restart: "always"
-    command: [ "/bin/sh", "-c", "while true; do sleep 5; curl -s 'http://webserver:80/admin/cron.php'; sleep 55; done" ]
+    command: [ "/bin/sh", "-c", "while true; do sleep 5; curl -s 'http://webserver/admin/cron.php'; sleep 55; done" ]
+    depends_on:
+      - "webserver"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
