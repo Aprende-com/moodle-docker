@@ -1,0 +1,5 @@
+username,email,firstname,lastname,password,city,country,timezone
+coursecreator,coursecreator@localhost.local,A-Test,CourseCreator,moodle,Miami,US,America/New_York
+manager,manager@localhost.local,A-Test,Manager,moodle,Bogota,CO,America/Bogota
+student,student@localhost.local,A-Test,Student,moodle,Buenos Aires,AR,America/Argentina/Buenos_Aires
+teacher,teacher@localhost.local,A-Test,Teacher,moodle,Mexico City,MX,America/Mexico_City

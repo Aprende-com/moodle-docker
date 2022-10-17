@@ -1,15 +1,18 @@
 version: "2"
 services:
   webserver:
+    restart: "always"
     environment:
       MOODLE_DOCKER_DBTYPE: mariadb
       MOODLE_DOCKER_DBCOLLATION: utf8mb4_bin
-#    command: ["bash","mdl-init.sh"]
+    extra_hosts:
+      - host.docker.internal:host-gateway
     depends_on:
       - "db"
 
   db:
     image: mariadb:${MOODLE_DOCKER_DB_VERSION:-10.7}
+    restart: "always"
     entrypoint: mysqld_safe --skip-grant-tables --user=mysql
     command: >
               --character-set-server=utf8mb4
@@ -35,6 +38,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    restart: "always"
     container_name: pma
     links:
       - db
@@ -42,11 +46,7 @@ services:
       PMA_HOST: db
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
-    restart: always
     ports:
-      - 8001:80
+      - 8900:80
     depends_on:
       - "db"
-
-volumes:
-  dbdata:

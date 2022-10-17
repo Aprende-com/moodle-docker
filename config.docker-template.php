@@ -53,7 +53,7 @@ $CFG->phpunit_prefix = 't_';
 define('TEST_EXTERNAL_FILES_HTTP_URL', 'http://exttests:9000');
 define('TEST_EXTERNAL_FILES_HTTPS_URL', 'http://exttests:9000');
 
-if (substr($_SERVER['REQUEST_URI'], 0, 15) != '/admin/cron.php') {
+if (isset($_SERVER['REQUEST_URI']) && substr($_SERVER['REQUEST_URI'], 0, 15) != '/admin/cron.php') {
     $CFG->behat_wwwroot   = 'http://webserver';
 };
 $CFG->behat_dataroot  = '/var/www/behatdata';
