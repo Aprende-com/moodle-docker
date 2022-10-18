@@ -50,6 +50,7 @@ case $1 in
 
         # Reset Start time.
         SECONDS=0
+        echo "Starting build on $(date)"
 
         rebuild=n
         if [ ! -d "$MOODLE_DOCKER_WWWROOT" ] && [ ! "$(ls -A $MOODLE_DOCKER_WWWROOT)" ]; then
@@ -130,7 +131,7 @@ case $1 in
             rm -rf $MOODLE_DOCKER_WWWROOT/assets
         fi
         git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
-        docker exec -ti moodle-webserver-1 mv $MOODLE_DOCKER_WWWROOT/assets /tmp/
+        docker exec -ti moodle-webserver-1 mv /var/www/html/assets /tmp/
         docker exec -ti moodle-webserver-1 bash -c /tmp/assets/mdl-init.sh
         echo "================================= DONE ================================="
         ./moodle help
