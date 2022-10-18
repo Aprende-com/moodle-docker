@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+
+# Read and set environment variables.
+if [ -f ~/moodle-docker/.env ]; then
+    cd ~
+    export $(cat ~/moodle-docker/.env | xargs | envsubst)
+    cd ~/moodle-docker
+else
+    echo "Cannot find .env file."
+    exit 1
+fi
+
+case $1 in
+    start)
+        bin/moodle-docker-compose start
+        echo "Use './moodle stop' to pause the docker containers or './moodle help' for more information."
+        exit 0
+        ;;
+    stop)
+        bin/moodle-docker-compose stop
+        echo "Use './moodle start' to resume operation of docker containers or './moodle help' for more information."
+        exit 0
+        ;;
+    down)
+        bin/moodle-docker-compose stop
+        bin/moodle-docker-compose down --remove-orphans
+        docker network prune -f
+        echo "Use './moodle up' to rebuild or './moodle help' for more information."
+        exit 0
+        ;;
+    update)
+        pushd $MOODLE_DOCKER_WWWROOT > /dev/null
+        git pull
+        git submodule update --remote
+        popd > /dev/null
+        echo "IMPORTANT: Be sure to login and go to Notifications to update the database."
+        ./moodle start
+        exit 0
+        ;;
+    up)
+        git ls-remote "git@github.com:Aprende-com/moodle-docker-assets.git" CHECK_GIT_REMOTE_URL_REACHABILITY
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "You need to first set up an SSH key in order to access Aprende-com's private repositories on GitHub."
+            echo "Exiting (error $status)."
+            exit $status
+        fi
+
+        shift
+
+        # Reset Start time.
+        SECONDS=0
+
+        rebuild=n
+        if [ ! -d "$MOODLE_DOCKER_WWWROOT" ] && [ ! "$(ls -A $MOODLE_DOCKER_WWWROOT)" ]; then
+            echo "Existing Moodle application files detected."
+            while true; do
+                read -p "Do you want re-create them (slow) again? (y/n) " yn
+                case $rebuild in
+                    [Yy]* )
+                        # Install the Moodle Applicaton.
+                        echo "Deleting the Moodle application directory..."
+                        sudo rm -rf $MOODLE_DOCKER_WWWROOT
+                        mkdir $MOODLE_DOCKER_WWWROOT
+                        echo "Please be patient, this will take a while..."
+                        if [ -z $2 ]; then
+                            REPO="Aprende-com/moodle-dev.git"
+                        else
+                            REPO="$2"
+                        fi
+                        pushd $MOODLE_DOCKER_WWWROOT > /dev/null
+                        echo "Creating the Moodle application directory..."
+                        git clone git@github.com:$REPO .
+                        if [ -f .gitmodules ]; then
+                            git submodule update --init --recursive .
+                            if [ ! -z "$3" ]; then
+                                submodules=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
+                                for path in $arr; do
+                                    pushd $path > /dev/null
+                                    branchexists=$(git branch --list ${3})
+                                    if [ ! -z ${branchexists} ]; then
+                                        git checkout $3
+                                    fi
+                                    popd > /dev/null
+                                done;
+                            fi
+                        fi
+                        popd > /dev/null
+
+                        # Add a Docker specific config file into Moodle.
+                        cp config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
+
+                        # Install some additional development tools.
+                        git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                        # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
+                        git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
+                        git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/tool/themetester
+                        git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
+                        git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
+                        git clone https://github.com/michael-milette/moodle-local_login $MOODLE_DOCKER_WWWROOT/local/login
+                        break;;
+                    [Nn]* )
+                        break;;
+                    * )
+                        echo "Please answer yes or no.";;
+                esac
+            done
+        fi
+
+        # Starts docker
+        bin/moodle-docker-compose up -d
+        # Wait for DB to come up (important for oracle/mssql)
+        bin/moodle-docker-wait-for-db
+        # Starts Containers
+        bin/moodle-docker-compose start
+
+        # Continue installation of database and moodledata. Moodle application files is the only persistent content.
+
+        # ===========================
+        echo "=== Creating the database."
+        # ===========================
+        docker exec -ti moodle-db-1 mysql -e "DROP DATABASE IF EXISTS moodle"
+        docker exec -ti moodle-db-1 mysql -e "CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+
+        # ===========================
+        echo "=== Initializing Moodle."
+        # ===========================
+        # Preparing Aprende private assets.
+        if [ -d $MOODLE_DOCKER_WWWROOT/assets ]; then
+            rm -rf $MOODLE_DOCKER_WWWROOT/assets
+        fi
+        git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
+        docker exec -ti moodle-webserver-1 mv $MOODLE_DOCKER_WWWROOT/assets /tmp/
+        docker exec -ti moodle-webserver-1 bash -c /tmp/assets/mdl-init.sh
+        echo "================================= DONE ================================="
+        ./moodle help
+        awk -v t=$SECONDS 'BEGIN{t=int(t*1000); printf "Elapsed Time (HH:MM:SS): %d:%02d:%02d\n", t/3600000, t/60000%60, t/1000%60}'
+        ;;
+    help)
+        echo "Some useful commands:"
+        echo "- docker ps -l               List of running container."
+        echo "- ./moodle                   Bash command prompt on webserver."
+        echo "- ./moodle help              Display this help."
+        echo "- ./moodle db                Run MySQL command line as root user."
+        echo "- ./moodle up                Builds and starts a Moodle site. See URLs below."
+        echo "- ./moodle down              Shutdown a container. Will result in data loss."
+        echo "- ./moodle start             Start a container."
+        echo "- ./moodle stop              Stop a container without loosing data"
+        echo "- ./moodle [other command]   Run the command on the webserver."
+        echo ""
+        echo "From inside the container:"
+        echo "- moosh                      See https://moosh-online.com/ for details."
+        echo "- composer"
+        echo ""
+        echo "Useful URLs:"
+        echo "- https://localhost:8100     Access the Moodle App."
+        echo "- https://localhost:8900     Access phpMyAdmin."
+        echo "- https://localhost:8000     Access the Moodle site."
+        echo ""
+        echo "Site Credentials:            Database Credentials:"
+        echo "- admin / moodle             - DB Host: db"
+        echo "- manager / moodle           - DB Name: moodle"
+        echo "- teacher / moodle           - DB User: moodle"
+        echo "- student / moodle           - DB Password: m@0dleing"
+        echo ""
+        echo "Be sure to login to Moodle to complete the upgrade."
+        ;;
+    *)
+        if [[ $# -eq 0 ]] ; then
+            docker exec -ti moodle-webserver-1 bash
+        elif [ "$1" = "db" ] ; then
+            shift
+            docker exec -ti moodle-db-1 mysql $@
+        else
+            docker exec -ti moodle-webserver-1 bash -c $@
+        fi
+        ;;
+esac

@@ -168,12 +168,6 @@ then
     dockercompose="${dockercompose} -f ${basedir}/phpunit-external-services.yml"
 fi
 
-# Database manager
-if [[ ! -z "$MOODLE_DOCKER_DBMANAGER" ]];
-then
-    dockercompose="${dockercompose} -f ${basedir}/${MOODLE_DOCKER_DBMANAGER}.yml"
-fi
-
 #  Faildump directory
 if [[ ! -z "$MOODLE_DOCKER_BEHAT_FAILDUMP" ]];
 then

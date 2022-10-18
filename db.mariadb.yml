@@ -26,8 +26,6 @@ services:
       MYSQL_PASSWORD: "m@0dl3ing"
       MYSQL_DATABASE: moodle
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
-    volumes:
-        - dbdata:/var/lib/mysql
 
   cron:
     image: alpine/curl:latest
