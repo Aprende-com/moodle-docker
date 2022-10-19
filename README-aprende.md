@@ -1,7 +1,7 @@
 Moodle-Docker-Aprende
 ---------------------
 
-Moodle Docker Aprende is a fully containerized environment for developing the Aprende LMS. It includes the following tools:
+Moodle Docker Aprende is a fully containerized environment for developing the Aprende LMS. It includes:
 
 * Moodle
 * Linux Ubuntu 20.04
@@ -18,10 +18,13 @@ Moodle Docker Aprende is a fully containerized environment for developing the Ap
 * Python 2.7
 * Graphviz
 * Spanish (Mexico) language packs
+* All themes and plugins (including images) used in the Aprende LMS.
+* A set of test users (see list below)
+* Custom profile fields (coming in the future)
+* Custom course fields (coming in the future)
+* Sample courses (coming in the future)
 
-It also installs many Aprende proprietary and 3rd party themes and plugins and settings as well as a set of test users.
-
-The following development-related plugins also come installed:
+The following development-related plugins also come pre-installed:
 
 * pluginskel
 * codechecker
@@ -29,6 +32,8 @@ The following development-related plugins also come installed:
 * themetester
 * theme_selector
 * adminer
+
+It also configures many Aprende LMS specific settings. More coming in the future.
 
 # System Requirements (pre-requisites)
 
@@ -57,7 +62,7 @@ Open a shell prompt. On Windows, start WSL2 by running the WSL command. Then:
     cd moodle-docker
     chmod +x moodle
 
-Before you run the following command, it is important to understand that, if you have a directory called ~/moodle, it will be deleted and replaced.
+Before you run the following command, it is important to understand that, if you have a directory called ~/moodle, it will be deleted and replaced.But don't worry, you will be prompted before this happens.
 
 To start the environment, run:
 
@@ -69,32 +74,43 @@ The process will take about 10 minutes depending on the speed of your computer.
 
 You can see the following list of CLI tools anytime by using the "./moodle help" command.
 
-Some useful commands:
-- ./moodle                   Access the Bash command line on webserver as root.
-- ./moodle help              Display this help.
-- ./moodle db                Access the MySQL (MariaDB) command line as root user.
-- ./moodle up                Builds and starts websites. See URLs below.
-- ./moodle down              Shutdown a container. Will result in data loss.
-- ./moodle start             Start a container.
-- ./moodle stop              Stop a container without loosing data
-- ./moodle status            List of running container.
-- ./moodle update            Update running container with latest code changes.
-- ./moodle [other command]   Run the command on the webserver.
+## Some useful commands
 
-From inside the container:
-- moosh                      See https://moosh-online.com/ for details.
-- composer
+| Command                  | Description                                           |
+|--------------------------|-------------------------------------------------------|
+| ./moodle                 | Access the Bash command line on webserver as root.    |
+| ./moodle help            | Display this help.                                    |
+| ./moodle db              | Access the MySQL (MariaDB) command line as root user. |
+| ./moodle up              | Builds and starts websites. See URLs below.           |
+| ./moodle down            | Shutdown a container. Will result in data loss.       |
+| ./moodle start           | Start a container.                                    |
+| ./moodle stop            | Stop a container without loosing data.                |
+| ./moodle status          | List of running container.                            |
+| ./moodle update          | Update running container with latest code changes.    |
+| ./moodle [other command] | Run the command on the webserver.                     |
+| **From inside the container:**                                                   |
+| moosh                    | See https://moosh-online.com/ for details.            |
+| composer                 |                                                       |
 
-Useful URLs:
-- https://localhost:8000     Access the Moodle LMS site.
-- https://localhost:8025     Access the MailHog site.
-- https://localhost:8100     Access the Moodle App.
-- https://localhost:8900     Access phpMyAdmin.
+## Useful URLs
 
-Site Credentials:            Database Credentials:
-- admin / moodle             - DB Host: db
-- manager / moodle           - DB Name: moodle
-- teacher / moodle           - DB User: moodle
-- student / moodle           - DB Password: m@0dleing
+| URL                    | Description                 |
+|------------------------|-----------------------------|
+| https://localhost:8000 | Access the Moodle LMS site. |
+| https://localhost:8025 | Access the MailHog site.    |
+| https://localhost:8100 | Access the Moodle App.      |
+| https://localhost:8900 | Access phpMyAdmin.          |
+
+## Moodle LMS Site Credentials
+- admin / moodle
+- manager / moodle
+- teacher / moodle
+- student / moodle
+
+## Database Credentials
+- DB Host: db
+- DB Name: moodle
+- DB User: moodle
+- DB Password: m@0dl3ing
 
 Be sure to login to Moodle to complete the upgrade.
