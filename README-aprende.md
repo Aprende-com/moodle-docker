@@ -53,9 +53,9 @@ You must first install:
 
 Open a shell prompt. On Windows, start WSL2 by running the WSL command. Then:
 
-git clone git@github.com:Aprende-com/moodle-docker.git moodle-docker
-cd moodle-docker
-chmod +x moodle
+    git clone git@github.com:Aprende-com/moodle-docker.git moodle-docker --branch aprende
+    cd moodle-docker
+    chmod +x moodle
 
 Before you run the following command, it is important to understand that, if you have a directory called ~/moodle, it will be deleted and replaced.
 
