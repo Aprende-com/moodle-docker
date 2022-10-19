@@ -14,6 +14,7 @@ case $1 in
     start)
         bin/moodle-docker-compose start
         echo "Use './moodle stop' to pause the docker containers or './moodle help' for more information."
+        ./moodle help
         exit 0
         ;;
     stop)
@@ -98,7 +99,6 @@ case $1 in
                         git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/tool/themetester
                         git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
                         git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
-                        git clone https://github.com/michael-milette/moodle-local_login $MOODLE_DOCKER_WWWROOT/local/login
                         break;;
                     [Nn]* )
                         break;;
@@ -154,9 +154,10 @@ case $1 in
         echo "- composer"
         echo ""
         echo "Useful URLs:"
+        echo "- https://localhost:8000     Access the Moodle site."
+        echo "- https://localhost:8025     Access the MailHog site."
         echo "- https://localhost:8100     Access the Moodle App."
         echo "- https://localhost:8900     Access phpMyAdmin."
-        echo "- https://localhost:8000     Access the Moodle site."
         echo ""
         echo "Site Credentials:            Database Credentials:"
         echo "- admin / moodle             - DB Host: db"
