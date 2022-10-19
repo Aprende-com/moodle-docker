@@ -29,6 +29,10 @@ case $1 in
         echo "Use './moodle up' to rebuild or './moodle help' for more information."
         exit 0
         ;;
+    status)
+        docker ps -l
+        exit 0
+        ;;
     update)
         pushd $MOODLE_DOCKER_WWWROOT > /dev/null
         git pull
@@ -139,14 +143,15 @@ case $1 in
         ;;
     help)
         echo "Some useful commands:"
-        echo "- docker ps -l               List of running container."
-        echo "- ./moodle                   Bash command prompt on webserver."
+        echo "- ./moodle                   Access the Bash command line on webserver as root."
         echo "- ./moodle help              Display this help."
-        echo "- ./moodle db                Run MySQL command line as root user."
-        echo "- ./moodle up                Builds and starts a Moodle site. See URLs below."
+        echo "- ./moodle db                Access the MySQL (MariaDB) command line as root user."
+        echo "- ./moodle up                Builds and starts websites. See URLs below."
         echo "- ./moodle down              Shutdown a container. Will result in data loss."
         echo "- ./moodle start             Start a container."
-        echo "- ./moodle stop              Stop a container without loosing data"
+        echo "- ./moodle stop              Stop a container without loosing data."
+        echo "- ./moodle status            List of running containers."
+        echo "- ./moodle update            Update running containers with latest code changes."
         echo "- ./moodle [other command]   Run the command on the webserver."
         echo ""
         echo "From inside the container:"
@@ -154,7 +159,7 @@ case $1 in
         echo "- composer"
         echo ""
         echo "Useful URLs:"
-        echo "- https://localhost:8000     Access the Moodle site."
+        echo "- https://localhost:8000     Access the Moodle LMS site."
         echo "- https://localhost:8025     Access the MailHog site."
         echo "- https://localhost:8100     Access the Moodle App."
         echo "- https://localhost:8900     Access phpMyAdmin."

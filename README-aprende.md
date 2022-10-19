@@ -15,6 +15,8 @@ Moodle Docker Aprende is a fully containerized environment for developing the Ap
 * MailHog
 * Selenium
 * Pseudo Cron
+* Python 2.7
+* Graphviz
 * Spanish (Mexico) language packs
 
 It also installs many Aprende proprietary and 3rd party themes and plugins and settings as well as a set of test users.
@@ -68,14 +70,15 @@ The process will take about 10 minutes depending on the speed of your computer.
 You can see the following list of CLI tools anytime by using the "./moodle help" command.
 
 Some useful commands:
-- docker ps -l               List of running container.
-- ./moodle                   Bash command prompt on webserver.
+- ./moodle                   Access the Bash command line on webserver as root.
 - ./moodle help              Display this help.
-- ./moodle db                Access to the MySQL (MariaDB) command line as root user.
-- ./moodle up                Builds and starts a Moodle site. See URLs below.
+- ./moodle db                Access the MySQL (MariaDB) command line as root user.
+- ./moodle up                Builds and starts websites. See URLs below.
 - ./moodle down              Shutdown a container. Will result in data loss.
 - ./moodle start             Start a container.
 - ./moodle stop              Stop a container without loosing data
+- ./moodle status            List of running container.
+- ./moodle update            Update running container with latest code changes.
 - ./moodle [other command]   Run the command on the webserver.
 
 From inside the container:
