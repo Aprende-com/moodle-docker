@@ -61,7 +61,7 @@ case $1 in
         if [ -d "$MOODLE_DOCKER_WWWROOT" ] && [ "$(ls -A $MOODLE_DOCKER_WWWROOT)" ]; then
             echo "Existing Moodle application files detected."
             while true; do
-                read -p "Do you want re-create them (slow) again? (y/n) " yn
+                read -p "Do you want re-create them (slow) again? (y/n) " rebuild
                 case $rebuild in
                     [Yy]* )
                         # Install the Moodle Applicaton.
