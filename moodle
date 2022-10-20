@@ -4,6 +4,7 @@
 if [ -f ~/moodle-docker/.env ]; then
     cd ~
     export $(cat ~/moodle-docker/.env | xargs | envsubst)
+    export MOODLE_DOCKER_CLIENT_HOST_IP=$(grep nameserver /etc/resolv.conf | cut -d ' ' -f2)
     cd ~/moodle-docker
 else
     echo "Cannot find .env file."
@@ -57,52 +58,14 @@ case $1 in
         SECONDS=0
         echo "Starting build on $(date)"
 
-        rebuild=n
-        if [ -d "$MOODLE_DOCKER_WWWROOT" ] && [ "$(ls -A $MOODLE_DOCKER_WWWROOT)" ]; then
-            echo "Existing Moodle application files detected."
+        if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
+            echo "Existing Moodle application directory detected."
             while true; do
-                read -p "Do you want re-create them (slow) again? (y/n) " rebuild
+                read -p "Do you want re-create it (slower and destructive) again? (y/n) " rebuild
                 case $rebuild in
                     [Yy]* )
-                        # Install the Moodle Applicaton.
                         echo "Deleting the Moodle application directory..."
                         sudo rm -rf $MOODLE_DOCKER_WWWROOT
-                        mkdir $MOODLE_DOCKER_WWWROOT
-                        echo "Please be patient, this will take a while..."
-                        if [ -z $2 ]; then
-                            REPO="Aprende-com/moodle-dev.git"
-                        else
-                            REPO="$2"
-                        fi
-                        pushd $MOODLE_DOCKER_WWWROOT > /dev/null
-                        echo "Creating the Moodle application directory..."
-                        git clone git@github.com:$REPO .
-                        if [ -f .gitmodules ]; then
-                            git submodule update --init --recursive .
-                            if [ ! -z "$3" ]; then
-                                submodules=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
-                                for path in $arr; do
-                                    pushd $path > /dev/null
-                                    branchexists=$(git branch --list ${3})
-                                    if [ ! -z ${branchexists} ]; then
-                                        git checkout $3
-                                    fi
-                                    popd > /dev/null
-                                done;
-                            fi
-                        fi
-                        popd > /dev/null
-
-                        # Add a Docker specific config file into Moodle.
-                        cp config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
-
-                        # Install some additional development tools.
-                        git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
-                        # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
-                        git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
-                        git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/tool/themetester
-                        git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
-                        git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
                         break;;
                     [Nn]* )
                         break;;
@@ -110,6 +73,55 @@ case $1 in
                         echo "Please answer yes or no.";;
                 esac
             done
+        fi
+
+        # Install the Moodle Applicaton.
+        if [ ! -d "$MOODLE_DOCKER_WWWROOT" ]; then
+            echo "Creating the Moodle application directory."
+            echo "Please be patient, this will take a while..."
+            if [ -z $2 ]; then
+                REPO="Aprende-com/moodle-dev.git"
+            else
+                REPO="$2"
+            fi
+            mkdir $MOODLE_DOCKER_WWWROOT
+            pushd $MOODLE_DOCKER_WWWROOT > /dev/null
+            if [ ! -z "$3" ]; then
+                # Get a specific branch.
+                BRANCH="$3"
+                git clone --branch $BRANCH git@github.com:$REPO
+            else
+                # Get the default branch.
+                BRANCH=""
+                git clone git@github.com:$REPO
+            fi
+            if [ -f .gitmodules ]; then
+                git submodule update --init --recursive .
+                if [ ! -z "$BRANCH" ]; then
+                    submodules=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
+                    for path in $arr; do
+                        pushd $path > /dev/null
+                        branchexists=$(git branch --list ${BRANCH})
+                        if [ ! -z ${branchexists} ]; then
+                            git checkout $3
+                        fi
+                        popd > /dev/null
+                    done;
+                fi
+            fi
+            popd > /dev/null
+
+            # Add a Docker specific config file into Moodle.
+            cp config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
+
+            # Install some additional development tools.
+            git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+            # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
+            git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
+            git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/tool/themetester
+            git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
+            git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
+            break;;
         fi
 
         # Starts docker
@@ -127,17 +139,22 @@ case $1 in
         docker exec -ti moodle-db-1 mysql -e "DROP DATABASE IF EXISTS moodle"
         docker exec -ti moodle-db-1 mysql -e "CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 
-        # ===========================
-        echo "=== Initializing Moodle."
-        # ===========================
-        # Preparing Aprende private assets.
-        if [ -d $MOODLE_DOCKER_WWWROOT/assets ]; then
-            rm -rf $MOODLE_DOCKER_WWWROOT/assets
+        if [ $REPO = "Aprende-com/moodle-dev.git" ]; then
+            # ===========================
+            echo "=== Initializing Moodle."
+            # ===========================
+            # Preparing Aprende private assets.
+            if [ -d $MOODLE_DOCKER_WWWROOT/assets ]; then
+                rm -rf $MOODLE_DOCKER_WWWROOT/assets
+            fi
+            git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
+            docker exec -ti moodle-webserver-1 mv /var/www/html/assets /tmp/
+            docker exec -ti moodle-webserver-1 bash -c /tmp/assets/mdl-init.sh
+            echo "================================= DONE ================================="
+        else
+            echo "Your Moodle site is ready for manual initialization."
+            docker exec -ti moodle-webserver-1 php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle"  --adminemail="admin@localhost.local" --agree-license --fullname="Aprende 3.11 Local DEV" --shortname="Local DEV"
         fi
-        git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
-        docker exec -ti moodle-webserver-1 mv /var/www/html/assets /tmp/
-        docker exec -ti moodle-webserver-1 bash -c /tmp/assets/mdl-init.sh
-        echo "================================= DONE ================================="
         ./moodle help
         awk -v t=$SECONDS 'BEGIN{t=int(t*1000); printf "Elapsed Time (HH:MM:SS): %d:%02d:%02d\n", t/3600000, t/60000%60, t/1000%60}'
         ;;

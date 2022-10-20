@@ -114,3 +114,11 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 - DB Password: m@0dl3ing
 
 Be sure to login to Moodle to complete the upgrade.
+
+# Future
+
+In the future, I am considering the following enhancements:
+
+- Make it possible to run multiple versions of Moodle at the same time. Examples might include, sites based on Aprende's dev, qa, prod branches, and Moodle's MOODLE_311_STABLE, MOODLE_410_STABLE and master branches. This will help developers identify whether issues are instance/version specific and enable developers to work on future releases of the Aprende LMS. Such a feature is partially implemented but **completely untested**. Currently, you can use the undocumented `./moodle up RepoURL branch` command. Example: `./moodle up moodle/moodle.git MOODLE_311_STABLE`. The limitation is that it will replace your current instance of Moodle instead of adding a new separate instance.
+
+If you have any suggestions or requests, please let me know. Pull requests are always welcome.
