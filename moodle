@@ -89,11 +89,11 @@ case $1 in
             if [ ! -z "$3" ]; then
                 # Get a specific branch.
                 BRANCH="$3"
-                git clone --branch $BRANCH git@github.com:$REPO
+                git clone --branch $BRANCH git@github.com:$REPO .
             else
                 # Get the default branch.
                 BRANCH=""
-                git clone git@github.com:$REPO
+                git clone git@github.com:$REPO .
             fi
             if [ -f .gitmodules ]; then
                 git submodule update --init --recursive .
