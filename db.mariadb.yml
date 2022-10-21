@@ -49,3 +49,21 @@ services:
       - 8900:80
     depends_on:
       - "db"
+
+  keycloak:
+    restart: "always"
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      DB_VENDOR: mariadb
+      DB_ADDR: db
+      DB_DATABASE: keycloak
+      DB_USER: moodle
+      DB_PASSWORD: m@0dl3ing
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
+    ports:
+      - 8080:8080
+    depends_on:
+      - db

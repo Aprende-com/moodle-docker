@@ -138,7 +138,7 @@ case $1 in
         docker exec -ti moodle-db-1 mysql -e "DROP DATABASE IF EXISTS moodle"
         docker exec -ti moodle-db-1 mysql -e "CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 
-        if [ $REPO = "Aprende-com/moodle-dev.git" ]; then
+        if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
             # ===========================
             echo "=== Initializing Moodle."
             # ===========================
@@ -175,10 +175,10 @@ case $1 in
         echo "- composer"
         echo ""
         echo "Useful URLs:"
-        echo "- https://localhost:8000     Access the Moodle LMS site."
-        echo "- https://localhost:8025     Access the MailHog site."
-        echo "- https://localhost:8100     Access the Moodle App."
-        echo "- https://localhost:8900     Access phpMyAdmin."
+        echo "- http://localhost:8000      Access the Moodle LMS site."
+        echo "- http://localhost:8025      Access the MailHog site."
+        echo "- http://localhost:8100      Access the Moodle App."
+        echo "- http://localhost:8900      Access phpMyAdmin."
         echo ""
         echo "Site Credentials:            Database Credentials:"
         echo "- admin / moodle             - DB Host: db"
