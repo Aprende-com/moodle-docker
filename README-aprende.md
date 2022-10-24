@@ -96,11 +96,11 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 
 | URL                          | Description                 |
 |------------------------------|-----------------------------|
-| https://localhost:8000       | Access the Moodle LMS site. |
-| https://localhost:8025       | Access the MailHog site.    |
-| https://localhost:8080       | Access the MailHog site.    |
-| https://localhost:8100/admin | Access the Keycloak.        |
-| https://localhost:8900       | Access phpMyAdmin.          |
+| http://localhost:8000       | Access the Moodle LMS site. |
+| http://localhost:8025       | Access the MailHog site.    |
+| http://localhost:8080       | Access the MailHog site.    |
+| http://localhost:8100/admin | Access the Keycloak.        |
+| http://localhost:8900       | Access phpMyAdmin.          |
 
 ## Moodle LMS Site Credentials
 - admin / moodle
