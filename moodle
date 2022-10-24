@@ -36,6 +36,10 @@ case $action in
         docker ps --filter name=moodle
         exit 0
         ;;
+    logs)
+        echo 'Note: Press CTRL-C to exit.'
+        docker logs moodle-webserver-1 --follow
+        ;;
     update)
         pushd $MOODLE_DOCKER_WWWROOT > /dev/null
         git pull
@@ -203,6 +207,7 @@ case $action in
         echo "- ./moodle start             Start a container."
         echo "- ./moodle stop              Stop a container without loosing data."
         echo "- ./moodle status            List of running containers."
+        echo "- ./moodle logs              View logs from the Moodle Webserver."
         echo "- ./moodle update            Update running containers with latest code changes."
         echo "- ./moodle [other command]   Run the command on the webserver."
         echo ""
