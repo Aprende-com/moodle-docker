@@ -27,6 +27,8 @@ services:
               --wait-timeout=28800
     volumes:
       - dbdata:/var/lib/mysql
+    ports:
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: "m@0dl3ing"
       MYSQL_USER: moodle
@@ -57,8 +59,7 @@ services:
       - "db"
 
   keycloak:
-    restart: "always"
-    container_name: keycloak
+    # restart: "always"
     container_name: ${COMPOSE_PROJECT_NAME}-keycloak
     image: quay.io/keycloak/keycloak:latest
     environment:
