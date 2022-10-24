@@ -6,6 +6,8 @@ services:
       MOODLE_DOCKER_DBTYPE: mariadb
       MOODLE_DOCKER_DBCOLLATION: utf8mb4_bin
       MOODLE_DOCKER_CLIENT_HOST_IP: ${MOODLE_DOCKER_CLIENT_HOST_IP}
+    volumes:
+      - moodledata:/var/www/moodledata
     extra_hosts:
       - host.docker.internal:host-gateway
     depends_on:
@@ -21,6 +23,8 @@ services:
               --innodb_file_format=barracuda
               --innodb_file_per_table=On
               --wait-timeout=28800
+    volumes:
+      - dbdata:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: "m@0dl3ing"
       MYSQL_USER: moodle
@@ -67,3 +71,6 @@ services:
       - 8080:8080
     depends_on:
       - db
+volumes:
+  moodledata:
+  dbdata:
