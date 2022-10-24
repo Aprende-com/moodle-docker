@@ -186,8 +186,8 @@ case $action in
             docker exec -ti moodle-webserver-1 bash -c /tmp/assets/mdl-init.sh
             echo "================================= DONE ================================="
         else
-            echo "Your Moodle site is ready for manual initialization."
             docker exec -ti moodle-webserver-1 php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle"  --adminemail="admin@localhost.local" --agree-license --fullname="Aprende 3.11 Local DEV" --shortname="Local DEV"
+            echo "Your Moodle site is ready for manual initialization."
         fi
         ./moodle help
         awk -v t=$SECONDS 'BEGIN{t=int(t*1000); printf "Elapsed Time (HH:MM:SS): %d:%02d:%02d\n", t/3600000, t/60000%60, t/1000%60}'
