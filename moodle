@@ -33,7 +33,7 @@ case $action in
         exit 0
         ;;
     status)
-        docker ps -l
+        docker ps --filter name=moodle
         exit 0
         ;;
     update)
