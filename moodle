@@ -46,16 +46,16 @@ case $action in
         exit 0
         ;;
     up)
-        if [ -z $(docker ps -a -q --filter name=${COMPOSE_PROJECT_NAME}) ] || [ -z $(docker volume ls -q --filter name=${COMPOSE_PROJECT_NAME}) ]; then
-            echo "There are no existing containers and volumes for project ${COMPOSE_PROJECT_NAME})."
-            echo "You need to run ./moodle reset first."
-        else
+        if [ -d $MOODLE_DOCKER_WWWROOT ] && [ ! -z "$(docker volume ls -q --filter name=${COMPOSE_PROJECT_NAME})" ]; then
             # Starts Docker.
             bin/moodle-docker-compose up -d
             # Wait for DB to come up (important for oracle/mssql)
             bin/moodle-docker-wait-for-db
             # Starts Containers
             bin/moodle-docker-compose start
+        else
+            echo "There are no existing containers and volumes for project ${COMPOSE_PROJECT_NAME})."
+            echo "You need to run ./moodle reset first."
         fi
         ;;
     reset)  # Reset docker build..
