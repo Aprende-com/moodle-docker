@@ -12,6 +12,8 @@ services:
       - host.docker.internal:host-gateway
     depends_on:
       - "db"
+    ports:
+      - ${MOODLE_DOCKER_XDEBUG_PORT}:9003
 
   db:
     image: mariadb:${MOODLE_DOCKER_DB_VERSION:-10.7}
