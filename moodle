@@ -11,7 +11,9 @@ else
     exit 1
 fi
 
-case $1 in
+action=$1
+
+case $action in
     start)
         bin/moodle-docker-compose start
         echo "Use './moodle stop' to pause the docker containers or './moodle help' for more information."
@@ -44,6 +46,19 @@ case $1 in
         exit 0
         ;;
     up)
+        if [ -z $(docker ps -a -q --filter name=${COMPOSE_PROJECT_NAME}) ] || [ -z $(docker volume ls -q --filter name=${COMPOSE_PROJECT_NAME}) ]; then
+            echo "There are no existing containers and volumes for project ${COMPOSE_PROJECT_NAME})."
+            echo "You need to run ./moodle reset first."
+        else
+            # Starts Docker.
+            bin/moodle-docker-compose up -d
+            # Wait for DB to come up (important for oracle/mssql)
+            bin/moodle-docker-wait-for-db
+            # Starts Containers
+            bin/moodle-docker-compose start
+        fi
+        ;;
+    reset)  # Reset docker build..
         git ls-remote "git@github.com:Aprende-com/moodle-docker-assets.git" CHECK_GIT_REMOTE_URL_REACHABILITY
         status=$?
         if [ $status -ne 0 ]; then
@@ -56,6 +71,26 @@ case $1 in
 
         # Reset Start time.
         SECONDS=0
+
+        # Stop the containers.
+        bin/moodle-docker-compose stop
+        bin/moodle-docker-compose down --remove-orphans
+        docker network prune -f
+
+        # Delete all containers.
+        list=$(docker ps -a -q --filter name=${COMPOSE_PROJECT_NAME})
+        if [ ! -z "$list" ]; then
+            echo "Deleting all containers..."
+            docker rm -f $list
+        fi
+
+        # Delete all volumes.
+        list=$(docker volume ls -q --filter name=${COMPOSE_PROJECT_NAME})
+        if [ ! -z "$list" ]; then
+            echo "Deleting all volumes..."
+            docker volume rm $list
+        fi
+
         echo "Starting build on $(date)"
 
         if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
@@ -162,7 +197,8 @@ case $1 in
         echo "- ./moodle                   Access the Bash command line on webserver as root."
         echo "- ./moodle help              Display this help."
         echo "- ./moodle db                Access the MySQL (MariaDB) command line as root user."
-        echo "- ./moodle up                Builds and starts websites. See URLs below."
+        echo "- ./moodle up                Starts current build. If none exist, will start new build. See URLs below."
+        echo "- ./moodle reset             Builds and starts websites. See URLs below."
         echo "- ./moodle down              Shutdown a container. Will result in data loss."
         echo "- ./moodle start             Start a container."
         echo "- ./moodle stop              Stop a container without loosing data."
@@ -189,9 +225,9 @@ case $1 in
         echo "Be sure to login to Moodle to complete the upgrade."
         ;;
     *)
-        if [[ $# -eq 0 ]] ; then
+        if [[ $# -eq 0 ]]; then
             docker exec -ti moodle-webserver-1 bash
-        elif [ "$1" = "db" ] ; then
+        elif [ "$1" = "db" ]; then
             shift
             docker exec -ti moodle-db-1 mysql $@
         else
