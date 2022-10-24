@@ -44,7 +44,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: "always"
-    container_name: pma
+    container_name: ${COMPOSE_PROJECT_NAME}-pma
     links:
       - db
     environment:
@@ -59,6 +59,7 @@ services:
   keycloak:
     restart: "always"
     container_name: keycloak
+    container_name: ${COMPOSE_PROJECT_NAME}-keycloak
     image: quay.io/keycloak/keycloak:latest
     environment:
       DB_VENDOR: mariadb
