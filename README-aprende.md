@@ -48,7 +48,7 @@ You must first install:
 - Ubuntu 20.04 in WSL2
 - Install Docker for Windows
 
-## For all operating systems
+## For All Operating Systems
 
 - You must have git install in the shell (in WSL on Windows)
 - You must have access to Aprende-com's repositories on GitHub.
@@ -74,7 +74,7 @@ The process will take about 10 minutes depending on the speed of your computer.
 
 You can see the following list of CLI tools anytime by using the "./moodle help" command.
 
-## Some useful commands
+## Some Useful Commands
 
 | Command                  | Description                                           |
 |--------------------------|-------------------------------------------------------|
@@ -82,7 +82,8 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 | ./moodle help            | Display this help.                                    |
 | ./moodle db              | Access the MySQL (MariaDB) command line as root user. |
 | ./moodle up              | Builds and starts websites. See URLs below.           |
-| ./moodle down            | Shutdown a container. Will result in data loss.       |
+| ./moodle down            | Shutdown a container.                                 |
+| ./moodle reset           | Builds and starts websites. Will result in deletion of all data. See URLs below. |
 | ./moodle start           | Start a container.                                    |
 | ./moodle stop            | Stop a container without loosing data.                |
 | ./moodle status          | List of running container.                            |
@@ -94,21 +95,31 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 
 ## Useful URLs
 
-| URL                          | Description                 |
-|------------------------------|-----------------------------|
+| URL                          | Description                |
+|------------------------------|----------------------------|
 | http://localhost:8000       | Access the Moodle LMS site. |
 | http://localhost:8025       | Access the MailHog site.    |
 | http://localhost:8080       | Access the MailHog site.    |
 | http://localhost:8100/admin | Access the Keycloak.        |
 | http://localhost:8900       | Access phpMyAdmin.          |
 
+## Additional Exposed Ports
+
+| Port           | Description              |
+|----------------|--------------------------|
+| localhost:1025 | SMTP server for MailHog. |
+| localhost:9004 | Xdebug.                  |
+| localhost:3307 | MariaDB server.          |
+
 ## Moodle LMS Site Credentials
+
 - admin / moodle
 - manager / moodle
 - teacher / moodle
 - student / moodle
 
 ## Database Credentials
+
 - DB Host: db
 - DB Name: moodle
 - DB User: moodle
