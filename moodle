@@ -4,11 +4,27 @@
 if [ -f ~/moodle-docker/.env ]; then
     cd ~
     export $(cat ~/moodle-docker/.env | xargs | envsubst)
+    export MOODLE_DOCKER_WWWROOT=$MOODLE_DOCKER_WWWROOT/$COMPOSE_PROJECT_NAME
     export MOODLE_DOCKER_CLIENT_HOST_IP=$(grep nameserver /etc/resolv.conf | cut -d ' ' -f2)
     cd ~/moodle-docker
 else
     echo "Cannot find .env file."
     exit 1
+fi
+
+# Check if Docker is available.
+docker-compose --version 2>/dev/null
+if [ $? -ne 0 ]; then
+    if [[ -n "$IS_WSL" || -n "$WSL_DISTRO_NAME" ]]; then
+        # For WSL2
+        echo "Ensure that Docker Desktop for Windows is installed and running."
+        echo "Ensure that Docker Desktop > Settings > Resources > WSL Integration is enabled."
+        echo "You must start WSL before starting Docker. Click Docker > Troubleshoot > Restart button."
+    else
+        # For Linux/MacOS X.
+        echo "Ensure that Docker and Docker-Compose are installed."
+    fi
+    exit 127
 fi
 
 action=$1
@@ -115,38 +131,48 @@ case $action in
         fi
 
         # Install the Moodle Applicaton.
+
+        # Moodle application repo.
+        REPO="${MOODLE_DOCKER_MOODLE_REPO}"
+        # Branch to check out for Moodle plugins.
+        if [ -z "$MOODLE_DOCKER_PLUGIN_BRANCH" ]; then
+            # Leave it as the repo's default branch.
+            BRANCH=""
+        else
+            # Get a specific branch.
+            BRANCH="${MOODLE_DOCKER_PLUGIN_BRANCH}"
+        fi
+
         if [ ! -d "$MOODLE_DOCKER_WWWROOT" ]; then
             echo "Creating the Moodle application directory."
             echo "Please be patient, this will take a while..."
-            if [ -z $2 ]; then
-                REPO="Aprende-com/moodle-dev.git"
-            else
-                REPO="$2"
-            fi
+
             mkdir $MOODLE_DOCKER_WWWROOT
             pushd $MOODLE_DOCKER_WWWROOT > /dev/null
-            if [ ! -z "$3" ]; then
-                # Get a specific branch.
-                BRANCH="$3"
-                git clone --branch $BRANCH git@github.com:$REPO .
-            else
-                # Get the default branch.
-                BRANCH=""
+
+            # Get the Moodle application repo.
+            if [ -z "$BRANCH" ]; then
                 git clone git@github.com:$REPO .
+            else
+                git clone --branch $BRANCH git@github.com:$REPO .
             fi
+
+            # If we have a .gitmodules file, install the submodules.
             if [ -f .gitmodules ]; then
                 git submodule update --init --recursive .
+                # For each Aprende plugin, checkout specific a specific branch if specified.
                 if [ ! -z "$BRANCH" ]; then
                     submodules=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
-                    for path in $arr; do
+                    for path in $submodules; do
                         pushd $path > /dev/null
                         branchexists=$(git branch --list ${BRANCH})
                         if [ ! -z ${branchexists} ]; then
-                            git checkout $3
+                            git checkout $BRANCH
                         fi
                         popd > /dev/null
                     done;
                 fi
+                # else leave on default branches.
             fi
             popd > /dev/null
 
