@@ -222,6 +222,10 @@ case $action in
         ./moodle help
         awk -v t=$SECONDS 'BEGIN{t=int(t*1000); printf "Elapsed Time (HH:MM:SS): %d:%02d:%02d\n", t/3600000, t/60000%60, t/1000%60}'
         ;;
+    db)
+        shift
+        docker exec -ti moodle-db-1 mysql $@
+        ;;
     help)
         echo "Some useful commands:"
         echo "- ./moodle                   Access the Bash command line on webserver as root."
@@ -263,9 +267,6 @@ case $action in
     *)
         if [[ $# -eq 0 ]]; then
             docker exec -ti moodle-webserver-1 bash
-        elif [ "$1" = "db" ]; then
-            shift
-            docker exec -ti moodle-db-1 mysql $@
         else
             docker exec -ti moodle-webserver-1 bash -c $@
         fi
