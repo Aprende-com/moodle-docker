@@ -89,6 +89,23 @@ case $action in
 
         shift
 
+        rebuild="N"
+        if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
+            echo "Existing Moodle application directory detected."
+            while true; do
+                read -p "Do you want re-create it (slower and destructive) again? (y/n) " rebuild
+                case $rebuild in
+                    [Yy]* )
+                        rebuild="Y"
+                        break;;
+                    [Nn]* )
+                        break;;
+                    * )
+                        echo "Please answer yes or no.";;
+                esac
+            done
+        fi
+
         # Reset Start time.
         SECONDS=0
 
@@ -113,21 +130,9 @@ case $action in
 
         echo "Starting build on $(date)"
 
-        if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
-            echo "Existing Moodle application directory detected."
-            while true; do
-                read -p "Do you want re-create it (slower and destructive) again? (y/n) " rebuild
-                case $rebuild in
-                    [Yy]* )
-                        echo "Deleting the Moodle application directory..."
-                        sudo rm -rf $MOODLE_DOCKER_WWWROOT
-                        break;;
-                    [Nn]* )
-                        break;;
-                    * )
-                        echo "Please answer yes or no.";;
-                esac
-            done
+        if [ $rebuild = 'Y' ]; then
+            echo "Deleting the Moodle application directory..."
+            sudo rm -rf $MOODLE_DOCKER_WWWROOT
         fi
 
         # Install the Moodle Applicaton.
