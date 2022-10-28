@@ -1,6 +1,7 @@
 version: "2"
 services:
   webserver:
+    container_name: ${COMPOSE_PROJECT_NAME}-webserver
     restart: "always"
     environment:
       MOODLE_DOCKER_DBTYPE: mariadb
@@ -17,6 +18,7 @@ services:
       - ${MOODLE_DOCKER_XDEBUG_PORT}:9003
 
   db:
+    container_name: ${COMPOSE_PROJECT_NAME}-db
     image: mariadb:${MOODLE_DOCKER_DB_VERSION:-10.7}
     restart: "always"
     entrypoint: mysqld_safe --skip-grant-tables --user=mysql
@@ -36,6 +38,7 @@ services:
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
 
   cron:
+    container_name: ${COMPOSE_PROJECT_NAME}-cron
     image: alpine/curl:latest
     restart: "always"
     command: [ "/bin/sh", "-c", "while true; do sleep 5; curl -s 'http://webserver/admin/cron.php'; sleep 55; done" ]
@@ -43,9 +46,9 @@ services:
       - "webserver"
 
   phpmyadmin:
+    container_name: ${COMPOSE_PROJECT_NAME}-pma
     image: phpmyadmin/phpmyadmin
     restart: "always"
-    container_name: ${COMPOSE_PROJECT_NAME}-pma
     links:
       - db
     environment:
@@ -58,9 +61,9 @@ services:
       - "db"
 
   keycloak:
-    # restart: "always"
     container_name: ${COMPOSE_PROJECT_NAME}-keycloak
     image: quay.io/keycloak/keycloak:latest
+    # restart: "always"
     environment:
       DB_VENDOR: mariadb
       DB_ADDR: db
@@ -76,6 +79,7 @@ services:
       - db
 
   mailhog:
+    container_name: ${COMPOSE_PROJECT_NAME}-mailhog
     restart: "always"
     logging:
       driver: 'none'  # disable saving logs
@@ -84,7 +88,14 @@ services:
       - 8025:8025 # web ui
 
   moodleapp:
+    container_name: ${COMPOSE_PROJECT_NAME}-moodleapp
     restart: "always"
+
+  exttests:
+    container_name: ${COMPOSE_PROJECT_NAME}-exttests
+
+  selenium:
+    container_name: ${COMPOSE_PROJECT_NAME}-selenium
 
 volumes:
   moodledata:

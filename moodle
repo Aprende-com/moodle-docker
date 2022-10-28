@@ -54,7 +54,7 @@ case $action in
         ;;
     logs)
         echo 'Note: Press CTRL-C to exit.'
-        docker logs moodle-webserver-1 --follow
+        docker logs $COMPOSE_PROJECT_NAME-webserver --follow
         ;;
     update)
         pushd $MOODLE_DOCKER_WWWROOT > /dev/null
@@ -205,8 +205,8 @@ case $action in
         # ===========================
         echo "=== Creating the database."
         # ===========================
-        docker exec -ti moodle-db-1 mysql -e "DROP DATABASE IF EXISTS moodle"
-        docker exec -ti moodle-db-1 mysql -e "CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql -e "DROP DATABASE IF EXISTS moodle"
+        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql -e "CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 
         if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
             # ===========================
@@ -217,11 +217,11 @@ case $action in
                 rm -rf $MOODLE_DOCKER_WWWROOT/assets
             fi
             git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
-            docker exec -ti moodle-webserver-1 mv /var/www/html/assets /tmp/
-            docker exec -ti moodle-webserver-1 bash -c /tmp/assets/mdl-init.sh
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver mv /var/www/html/assets /tmp/
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash -c /tmp/assets/mdl-init.sh
             echo "================================= DONE ================================="
         else
-            docker exec -ti moodle-webserver-1 php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle"  --adminemail="admin@localhost.local" --agree-license --fullname="Aprende 3.11 Local DEV" --shortname="Local DEV"
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle"  --adminemail="admin@localhost.local" --agree-license --fullname="Aprende 3.11 Local DEV" --shortname="Local DEV"
             echo "Your Moodle site is ready for manual initialization."
         fi
         ./moodle help
@@ -229,7 +229,7 @@ case $action in
         ;;
     db)
         shift
-        docker exec -ti moodle-db-1 mysql $@
+        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql $@
         ;;
     help)
         echo "Some useful commands:"
@@ -271,9 +271,9 @@ case $action in
         ;;
     *)
         if [[ $# -eq 0 ]]; then
-            docker exec -ti moodle-webserver-1 bash
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash
         else
-            docker exec -ti moodle-webserver-1 bash -c $@
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash -c $@
         fi
         ;;
 esac
