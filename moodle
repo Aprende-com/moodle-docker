@@ -56,6 +56,12 @@ case $action in
         echo 'Note: Press CTRL-C to exit.'
         docker logs moodle-webserver-1 --follow
         ;;
+    xdebug)
+        bin/moodle-docker-compose exec webserver pecl install xdebug apcu xmlrpc
+        echo "Use './moodle xdebug' to enable xdebug"
+        ./moodle help
+        exit 0
+        ;;
     update)
         pushd $MOODLE_DOCKER_WWWROOT > /dev/null
         git pull
@@ -238,6 +244,7 @@ case $action in
         echo "- ./moodle stop              Stop a container without loosing data."
         echo "- ./moodle status            List of running containers."
         echo "- ./moodle logs              View logs from the Moodle Webserver."
+        echo "- ./moodle xdebug            Enable Xdebug"
         echo "- ./moodle update            Update running containers with latest code changes."
         echo "- ./moodle [other command]   Run the command on the webserver."
         echo ""
