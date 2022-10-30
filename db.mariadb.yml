@@ -2,6 +2,7 @@ version: "2"
 services:
   webserver:
     container_name: ${COMPOSE_PROJECT_NAME}-webserver
+    image: "michaelmilette/moodle-php-apache-plus:${MOODLE_DOCKER_PHP_VERSION}"
     restart: "always"
     environment:
       MOODLE_DOCKER_DBTYPE: mariadb
