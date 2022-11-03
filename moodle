@@ -5,7 +5,11 @@ if [ -f ~/moodle-docker/.env ]; then
     cd ~
     export $(cat ~/moodle-docker/.env | xargs | envsubst)
     export MOODLE_DOCKER_WWWROOT=$MOODLE_DOCKER_WWWROOT/$COMPOSE_PROJECT_NAME
-    export MOODLE_DOCKER_CLIENT_HOST_IP=$(grep nameserver /etc/resolv.conf | cut -d ' ' -f2)
+    if [ "$(uname -s)" = "Darwin" ]; then
+        export MOODLE_DOCKER_CLIENT_HOST_IP=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}')
+    else
+        export MOODLE_DOCKER_CLIENT_HOST_IP=$(hostname -I | awk '{print $1}')
+    fi
     cd ~/moodle-docker
 else
     echo "Cannot find .env file."
