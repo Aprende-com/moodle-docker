@@ -34,7 +34,7 @@ services:
       MYSQL_USER: moodle
       MYSQL_PASSWORD: "m@0dl3ing"
       MYSQL_DATABASE: ${COMPOSE_PROJECT_NAME}
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
 
   cron:
     container_name: ${COMPOSE_PROJECT_NAME}-cron
