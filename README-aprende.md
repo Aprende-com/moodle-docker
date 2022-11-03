@@ -95,12 +95,12 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 
 ## Useful URLs
 
-| URL                          | Description                |
-|------------------------------|----------------------------|
+| URL                         | Description                |
+|-----------------------------|----------------------------|
 | http://localhost:8000       | Access the Moodle LMS site. |
 | http://localhost:8025       | Access the MailHog site.    |
-| http://localhost:8080       | Access the MailHog site.    |
-| http://localhost:8100/admin | Access the Keycloak.        |
+| http://localhost:8080/admin | Access the Keycloak site.   |
+| http://localhost:8100       | Access the Moodle app.      |
 | http://localhost:8900       | Access phpMyAdmin.          |
 
 ## Additional Exposed Ports
@@ -108,8 +108,8 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 | Port           | Description              |
 |----------------|--------------------------|
 | localhost:1025 | SMTP server for MailHog. |
-| localhost:9004 | Xdebug.                  |
-| localhost:3307 | MariaDB server.          |
+| localhost:9003 | Xdebug.                  |
+| localhost:3306 | MariaDB server.          |
 
 ## Moodle LMS Site Credentials
 
