@@ -7,7 +7,6 @@ services:
     environment:
       MOODLE_DOCKER_DBTYPE: mariadb
       MOODLE_DOCKER_DBCOLLATION: utf8mb4_bin
-      MOODLE_DOCKER_CLIENT_HOST_IP: ${MOODLE_DOCKER_CLIENT_HOST_IP}
       MOODLE_DOCKER_DBNAME: ${COMPOSE_PROJECT_NAME}
     volumes:
       - moodledata:/var/www/moodledata
