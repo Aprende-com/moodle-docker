@@ -56,10 +56,18 @@ case $action in
         docker logs $COMPOSE_PROJECT_NAME-webserver --follow
         ;;
     update)
+        echo "Updating modole in $MOODLE_DOCKER_WWWROOT"
         pushd $MOODLE_DOCKER_WWWROOT > /dev/null
+        echo "--------------------"
+        echo "Updating Moodle..."
+        echo "--------------------"
         git pull
+        echo "--------------------"
+        echo "Updating submodules..."
+        echo "--------------------"
         git submodule update --remote
         popd > /dev/null
+        echo "Done."
         echo "IMPORTANT: Be sure to login and go to Notifications to update the database."
         ./moodle start
         exit 0
@@ -156,7 +164,7 @@ case $action in
 
             # Get the Moodle application repo.
             if [ -z "$BRANCH" ]; then
-                git clone git@github.com:$REPO .
+                git clone --branch aprende_31110_dev git@github.com:$REPO .
             else
                 git clone --branch $BRANCH git@github.com:$REPO .
             fi
