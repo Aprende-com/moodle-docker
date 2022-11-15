@@ -1,5 +1,8 @@
 <?php  // Moodle configuration file
 
+// Fix for Blocked by CORS policy: No 'Access-Control-Allow-Origin' header.
+header('Access-Control-Allow-Origin: *');
+
 unset($CFG);
 global $CFG;
 $CFG = new stdClass();
