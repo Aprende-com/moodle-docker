@@ -94,6 +94,9 @@ case $action in
             exit $status
         fi
 
+        # Cache sudo password.
+        sudo false
+
         shift
 
         rebuild="N"
@@ -164,7 +167,7 @@ case $action in
 
             # Get the Moodle application repo.
             if [ -z "$BRANCH" ]; then
-                git clone --branch aprende_31110_dev git@github.com:$REPO .
+                git clone --branch aprende_31111_dev git@github.com:$REPO .
             else
                 git clone --branch $BRANCH git@github.com:$REPO .
             fi
