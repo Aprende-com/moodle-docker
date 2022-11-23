@@ -44,7 +44,7 @@ case $action in
         bin/moodle-docker-compose stop
         bin/moodle-docker-compose down --remove-orphans
         docker network prune -f
-        echo "Use './moodle up' to rebuild or './moodle help' for more information."
+        echo "Use './moodle up' to restart, './moodle reset' to rebuild, or './moodle help' for more information."
         exit 0
         ;;
     status)
