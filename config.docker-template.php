@@ -13,7 +13,7 @@ $CFG->dbhost    = 'db';
 $CFG->dbname    = getenv('MOODLE_DOCKER_DBNAME');
 $CFG->dbuser    = getenv('MOODLE_DOCKER_DBUSER');
 $CFG->dbpass    = getenv('MOODLE_DOCKER_DBPASS');
-$CFG->prefix    = 'm_';
+$CFG->prefix    = 'mdl_';
 $CFG->dboptions = ['dbcollation' => getenv('MOODLE_DOCKER_DBCOLLATION')];
 
 if (php_sapi_name() == "cli") {
