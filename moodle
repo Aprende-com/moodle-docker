@@ -167,7 +167,7 @@ case $action in
 
             # Get the Moodle application repo.
             if [ -z "$BRANCH" ]; then
-                git clone --branch aprende_31111_dev git@github.com:$REPO .
+                git clone --branch $BRANCH git@github.com:$REPO .
             else
                 git clone --branch $BRANCH git@github.com:$REPO .
             fi
