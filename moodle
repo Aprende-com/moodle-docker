@@ -40,6 +40,31 @@ case $action in
         echo "Use './moodle start' to resume operation of docker containers or './moodle help' for more information."
         exit 0
         ;;
+    uninstall)
+        action="ABORT"
+        while true; do
+            read -p "Are you sure that you want to remove the site? (y/n) " action
+            case $action in
+                [Yy]* )
+                    action="DELETE"
+                    break;;
+                [Nn]* )
+                    break;;
+                * )
+                    echo "Please answer yes or no.";;
+            esac
+        done
+        if [ $action == "DELETE" ]; then
+            bin/moodle-docker-compose stop
+            bin/moodle-docker-compose down --remove-orphans
+            docker network prune -f
+            if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
+                echo "Deleting the Moodle application directory..."
+                sudo rm -rf $MOODLE_DOCKER_WWWROOT
+                echo "Use './moodle reset' to build, or './moodle help' for more information."
+            fi
+        fi
+        ;;
     down)
         bin/moodle-docker-compose stop
         bin/moodle-docker-compose down --remove-orphans
@@ -56,7 +81,7 @@ case $action in
         docker logs $COMPOSE_PROJECT_NAME-webserver --follow
         ;;
     update)
-        echo "Updating modole in $MOODLE_DOCKER_WWWROOT"
+        echo "Updating moodle in $MOODLE_DOCKER_WWWROOT"
         pushd $MOODLE_DOCKER_WWWROOT > /dev/null
         echo "--------------------"
         echo "Updating Moodle..."
@@ -149,14 +174,10 @@ case $action in
 
         # Moodle application repo.
         REPO="${MOODLE_DOCKER_MOODLE_REPO}"
+        # Specific Moodle branch to checkout.
+        BRANCH="${MOODLE_DOCKER_MOODLE_BRANCH}"
         # Branch to check out for Moodle plugins.
-        if [ -z "$MOODLE_DOCKER_PLUGIN_BRANCH" ]; then
-            # Leave it as the repo's default branch.
-            BRANCH=""
-        else
-            # Get a specific branch.
-            BRANCH="${MOODLE_DOCKER_PLUGIN_BRANCH}"
-        fi
+        PBRANCH="${MOODLE_DOCKER_PLUGIN_BRANCH}"
 
         if [ ! -d "$MOODLE_DOCKER_WWWROOT" ]; then
             echo "Creating the Moodle application directory."
@@ -166,23 +187,19 @@ case $action in
             pushd $MOODLE_DOCKER_WWWROOT > /dev/null
 
             # Get the Moodle application repo.
-            if [ -z "$BRANCH" ]; then
-                git clone --branch $BRANCH git@github.com:$REPO .
-            else
-                git clone --branch $BRANCH git@github.com:$REPO .
-            fi
+            git clone --branch $BRANCH git@github.com:$REPO .
 
             # If we have a .gitmodules file, install the submodules.
             if [ -f .gitmodules ]; then
                 git submodule update --init --recursive .
                 # For each Aprende plugin, checkout specific a specific branch if specified.
-                if [ ! -z "$BRANCH" ]; then
+                if [ ! -z "$PBRANCH" ]; then
                     submodules=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
                     for path in $submodules; do
                         pushd $path > /dev/null
-                        branchexists=$(git branch --list ${BRANCH})
+                        branchexists=$(git branch --list ${PBRANCH})
                         if [ ! -z ${branchexists} ]; then
-                            git checkout $BRANCH
+                            git checkout $PBRANCH
                         fi
                         popd > /dev/null
                     done;
@@ -194,13 +211,15 @@ case $action in
             # Add a Docker specific config file into Moodle.
             cp config.docker-template.php $MOODLE_DOCKER_WWWROOT/config.php
 
-            # Install some additional development tools.
-            git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
-            # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
-            git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
-            git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/tool/themetester
-            git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
-            git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
+            if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
+                # Install some additional development tools.
+                git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
+                git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
+                git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/tool/themetester
+                git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
+                git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
+            fi
         fi
 
         # Starts docker
@@ -215,25 +234,25 @@ case $action in
         # ===========================
         echo "=== Creating the database."
         # ===========================
-        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql -e "DROP DATABASE IF EXISTS moodle"
-        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql -e "CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql -e "DROP DATABASE IF EXISTS $COMPOSE_PROJECT_NAME"
+        docker exec -ti $COMPOSE_PROJECT_NAME-db mysql -e "CREATE DATABASE $COMPOSE_PROJECT_NAME DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 
+        # ===========================
+        echo "=== Initializing Moodle."
+        # ===========================
+        # Preparing Aprende private assets.
         if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
-            # ===========================
-            echo "=== Initializing Moodle."
-            # ===========================
-            # Preparing Aprende private assets.
             if [ -d $MOODLE_DOCKER_WWWROOT/assets ]; then
                 rm -rf $MOODLE_DOCKER_WWWROOT/assets
             fi
             git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
             docker exec -ti $COMPOSE_PROJECT_NAME-webserver mv /var/www/html/assets /tmp/
-            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash -c /tmp/assets/mdl-init.sh
-            echo "================================= DONE ================================="
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash -c /tmp/assets/mdl-init.sh $MOODLE_DOCKER_MOODLE_VERSION /var/www/moodledata
         else
-            docker exec -ti $COMPOSE_PROJECT_NAME-webserver php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle"  --adminemail="admin@localhost.local" --agree-license --fullname="Aprende 3.11 Local DEV" --shortname="Local DEV"
-            echo "Your Moodle site is ready for manual initialization."
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle" --adminemail="admin@local.localhost" --agree-license --fullname="Aprende $MOODLE_DOCKER_MOODLE_VERSION Local DEV" --shortname="Moodle DEV $MOODLE_DOCKER_MOODLE_VERSION"
         fi
+        echo "Your Moodle site is ready."
+        echo "================================= DONE ================================="
         ./moodle help
         awk -v t=$SECONDS 'BEGIN{t=int(t*1000); printf "Elapsed Time (HH:MM:SS): %d:%02d:%02d\n", t/3600000, t/60000%60, t/1000%60}'
         ;;
@@ -256,27 +275,41 @@ case $action in
         echo "- ./moodle update            Update running containers with latest code changes."
         echo "- ./moodle [other command]   Run the command on the webserver."
         echo ""
-        echo "From inside the container:"
-        echo "- moosh                      See https://moosh-online.com/ for details."
-        echo "- composer"
-        echo ""
+        if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
+            echo "From inside the container:"
+            echo "- moosh                      See https://moosh-online.com/ for details."
+            echo "- composer"
+            echo ""
+        fi
         echo "Useful URLs:"
         echo "- http://localhost:8000      Access the Moodle LMS site."
         echo "- http://localhost:8025      Access the MailHog site."
-        echo "- http://localhost:8080/admin Access the Moodle App."
+        echo "- http://localhost:8080/admin Access the Keycloak App."
         echo "- http://localhost:8100      Access the Moodle App."
         echo "- http://localhost:8900      Access phpMyAdmin."
         echo ""
         echo " Port Description:"
         echo " - localhost:1025            SMTP server for MailHog."
-        echo " - localhost:9003            Xdebug."
         echo " - localhost:3306            MariaDB server."
-        echo ""
-        echo "Site Credentials:            Database Credentials:"
-        echo "- admin / moodle             - DB Host: db"
-        echo "- manager / moodle           - DB Name: moodle"
-        echo "- teacher / moodle           - DB User: moodle"
-        echo "- student / moodle           - DB Password: m@0dleing"
+        if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
+            echo " - localhost:9003            Xdebug."
+            echo ""
+            echo "Site Credentials:            Database Credentials:"
+            echo "- admin / moodle             - DB Host: db"
+            echo "- manager / moodle           - DB Name: moodle"
+            echo "- teacher / moodle           - DB User: moodle"
+            echo "- student / moodle           - DB Password: m@0dleing"
+        else
+            echo ""
+            echo "Site Credentials:"
+            echo "- admin / moodle"
+            echo ""
+            echo "Database Credentials:"
+            echo "- DB Host: db"
+            echo "- DB Name: moodle"
+            echo "- DB User: moodle"
+            echo "- DB Password: m@0dleing"
+        fi
         echo ""
         echo "Be sure to login to Moodle to complete the upgrade."
         ;;
