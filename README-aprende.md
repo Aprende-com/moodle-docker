@@ -58,17 +58,30 @@ You must first install:
 
 Open a shell prompt. On Windows, start WSL2 by running the WSL command. Then:
 
+    cd ~
     git clone git@github.com:Aprende-com/moodle-docker.git moodle-docker --branch aprende
     cd moodle-docker
     chmod +x moodle
 
-Before you run the following command, it is important to understand that, if you have a directory called ~/moodle, it will be deleted and replaced.But don't worry, you will be prompted before this happens.
+Before you run the following command, it is important to understand that, if you already have a directory called ~/moodle, it will be deleted and replaced.But don't worry, you will be prompted before this happens.
 
 To start the environment, run:
 
-./moodle up
+./moodle reset
 
-The process will take about 10 minutes depending on the speed of your computer.
+The process will take about 15 minutes depending on the speed of your computer.
+
+## Option: Try Moodle 3.11
+
+If you want to try out a plain installation of Moodle 3.11 core with PHP 7.4, simply replace "--branch aprende" in the instructions above with "--branch MOODLE_311_STABLE". Note that Moodle will be installed in a directory called "~/moodle311" instead of "~/moodle".
+
+## Option: Try Moodle 4.0
+
+If you want to try out a plain installation of Moodle 4.0 core with PHP 8.0, simply replace "--branch aprende" in the instructions above with "--branch MOODLE_400_STABLE". Note that Moodle will be installed in a directory called "~/moodle400" instead of "~/moodle".
+
+## Option: Try Moodle 4.1
+
+If you want to try out a plain installation of Moodle 4.1 core with PHP 8.0, simply replace "--branch aprende" in the instructions above with "--branch MOODLE_401_STABLE". Note that Moodle will be installed in a directory called "~/moodle401" instead of "~/moodle".
 
 # Using Moodle-Docker-Aprende
 
