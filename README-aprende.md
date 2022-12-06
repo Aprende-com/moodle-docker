@@ -37,16 +37,16 @@ It also configures many Aprende LMS specific settings. More coming in the future
 
 # System Requirements (pre-requisites)
 
-## For Linux and Mac OS
+## For Linux and MacOS
 
-You must first install docker and docker-compose.
+You must first install [Docker Desktop](https://www.docker.com/) or Docker and Docker-compose.
 
 ## For Windows
 
 You must first install:
 - WSL2
 - Ubuntu 20.04 in WSL2
-- Install Docker for Windows
+- Install [Docker Desktop](https://www.docker.com/) for Windows
 
 ## For All Operating Systems
 
