@@ -225,11 +225,6 @@ case $action in
                             git pull --rebase;
                         fi;
                     "
-
-                    # The following fix is compatible with Moodle 3.11 and will be integrated shortly.
-                    pushd theme/aprende > /dev/null
-                    git cherry-pick origin/LMSDEV-4059
-                    popd > /dev/null
                 fi
 
                 # Otherwise, leave repos on default branches.
