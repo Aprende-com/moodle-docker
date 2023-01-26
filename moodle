@@ -216,60 +216,23 @@ case $action in
                 fi
 
                 if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.0" ]; then
-                    # Apply aprende_400_features branch and update it if it exists.
+                    # Apply aprende_400_features branch if it exists and rebase it using latest in master for aprende-owned plugins.
                     git submodule foreach "
                         git fetch origin;
                         exists=\$(git branch -r --list origin/aprende_400_features);
                         if [ ! -z \$exists ]; then
                             git checkout aprende_400_features;
                             git pull origin HEAD;
+                            cd - > /dev/null;
+                            aprende=\$(git config -f .gitmodules --default false --get submodule.\$sm_path.aprende);
+                            cd - > /dev/null;
+                            if [ \$aprende = "true" ]; then
+                                git pull --rebase origin master;
+                                # git pull --rebase origin master && git push origin HEAD;
+                            fi;
+                            echo
                         fi;
                     "
-                    modules=(
-                        "admin/tool/aprende_linkscanner"
-                        "admin/tool/course_publisher"
-                        "blocks/aprende_banner"
-                        "blocks/aprende_catalog"
-                        "blocks/aprende_coursenavigation"
-                        "blocks/aprende_diplomados_overview"
-                        "blocks/aprende_microcourses_overview"
-                        "blocks/aprende_primary_diplomado"
-                        "blocks/aprende_recommendations"
-                        "blocks/aprendeoverview"
-                        "blocks/timezone_detection"
-                        "course/format/aprendetopics"
-                        "course/format/diplomados"
-                        "course/format/microcourse"
-                        "course/format/shortclass"
-                        "enrol/aprendeself"
-                        "lib/editor/atto/plugins/aprendeimageupload"
-                        "local/advising"
-                        "local/aprende"
-                        "local/aprende_react"
-                        "local/liveclass_manager"
-                        "local/nextrate"
-                        "local/onboarding"
-                        "local/profile"
-                        "local/referral"
-                        "local/widgets"
-                        "mod/aprendext"
-                        "mod/liveclassactivity"
-                        "mod/multiactivity"
-                        "theme/aprende"
-                        "theme/aprende_react"
-                        "theme/microcourse"
-                        "user/profile/field/salesforcesync"
-                    )
-                    for module in "${modules[@]}"; do
-                        pushd $module >/dev/null
-                        echo Processing $module
-                        exists=$(git branch --list -r origin/aprende_400_features)
-                        if [ ! -z $exists ]; then
-                            git pull --rebase origin/master
-                        fi
-                        popd >/dev/null
-                    done
-
                 fi
 
                 # Otherwise, leave repos on default branches.
