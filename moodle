@@ -222,9 +222,54 @@ case $action in
                         exists=\$(git branch -r --list origin/aprende_400_features);
                         if [ ! -z \$exists ]; then
                             git checkout aprende_400_features;
-                            git pull --rebase;
+                            git pull origin HEAD;
                         fi;
                     "
+                    modules=(
+                        "admin/tool/aprende_linkscanner"
+                        "admin/tool/course_publisher"
+                        "blocks/aprende_banner"
+                        "blocks/aprende_catalog"
+                        "blocks/aprende_coursenavigation"
+                        "blocks/aprende_diplomados_overview"
+                        "blocks/aprende_microcourses_overview"
+                        "blocks/aprende_primary_diplomado"
+                        "blocks/aprende_recommendations"
+                        "blocks/aprendeoverview"
+                        "blocks/timezone_detection"
+                        "course/format/aprendetopics"
+                        "course/format/diplomados"
+                        "course/format/microcourse"
+                        "course/format/shortclass"
+                        "enrol/aprendeself"
+                        "lib/editor/atto/plugins/aprendeimageupload"
+                        "local/advising"
+                        "local/aprende"
+                        "local/aprende_react"
+                        "local/liveclass_manager"
+                        "local/nextrate"
+                        "local/onboarding"
+                        "local/profile"
+                        "local/referral"
+                        "local/widgets"
+                        "mod/aprendext"
+                        "mod/liveclassactivity"
+                        "mod/multiactivity"
+                        "theme/aprende"
+                        "theme/aprende_react"
+                        "theme/microcourse"
+                        "user/profile/field/salesforcesync"
+                    )
+                    for module in "${modules[@]}"; do
+                        pushd $module >/dev/null
+                        echo Processing $module
+                        exists=$(git branch --list -r origin/aprende_400_features)
+                        if [ ! -z $exists ]; then
+                            git pull --rebase origin/master
+                        fi
+                        popd >/dev/null
+                    done
+
                 fi
 
                 # Otherwise, leave repos on default branches.
