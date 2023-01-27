@@ -197,6 +197,7 @@ case $action in
                 git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/admin/tool/themetester
                 git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
                 git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
+                git clone git@github.com:Aprende-com/moodle_development_kit.git $MOODLE_DOCKER_WWWROOT/adk
             fi
 
             # If we have a .gitmodules file, install the submodules.
