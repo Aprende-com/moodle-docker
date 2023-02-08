@@ -223,7 +223,7 @@ case $action in
                         exists=\$(git branch -r --list origin/aprende_400_features);
                         if [ ! -z \$exists ]; then
                             git checkout aprende_400_features;
-                            git pull origin HEAD;
+                            git reset --hard HEAD;
                             cd - > /dev/null;
                             aprende=\$(git config -f .gitmodules --default false --get submodule.\$sm_path.aprende);
                             cd - > /dev/null;
