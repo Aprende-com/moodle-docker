@@ -191,7 +191,13 @@ case $action in
 
             if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
                 # Install some additional development tools.
-                git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.1" ]; then
+                    # For Moodle 4.1+.
+                    git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel\
+                else
+                    # For Moodle less than 4.1.
+                    git clone --branch 1.5.3 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                fi
                 # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
                 git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
                 git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/admin/tool/themetester
