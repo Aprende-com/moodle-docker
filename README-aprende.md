@@ -9,13 +9,14 @@ Moodle Docker Aprende is a fully containerized environment for developing the Ap
 * PHP
 * MariaDB
 * Composer
+* Aprende Moodle Development Kit
 * Moosh
 * Bash
 * phpMyAdmin
 * MailHog
 * Selenium
 * Pseudo Cron
-* Python 2.7
+* Python 3.9
 * Graphviz
 * Spanish (Mexico) language packs
 * All themes and plugins (including images) used in the Aprende LMS.
