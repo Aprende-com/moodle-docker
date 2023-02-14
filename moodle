@@ -216,25 +216,25 @@ case $action in
                     "
                 fi
 
-                if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.0" ]; then
-                    # Apply aprende_400_features branch if it exists and rebase it using latest in master for aprende-owned plugins.
-                    git submodule foreach "
-                        git fetch origin;
-                        exists=\$(git branch -r --list origin/aprende_400_features);
-                        if [ ! -z \$exists ]; then
-                            git checkout aprende_400_features;
-                            git reset --hard HEAD;
-                            cd - > /dev/null;
-                            aprende=\$(git config -f .gitmodules --default false --get submodule.\$sm_path.aprende);
-                            cd - > /dev/null;
-                            if [ \$aprende = "true" ]; then
-                                git pull --rebase origin master;
-                                # git pull --rebase origin master && git push origin HEAD;
-                            fi;
-                            echo
-                        fi;
-                    "
-                fi
+                # if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.0" ]; then
+                #     # Apply aprende_400_features branch if it exists and rebase it using latest in master for aprende-owned plugins.
+                #     git submodule foreach "
+                #         git fetch origin;
+                #         exists=\$(git branch -r --list origin/aprende_400_features);
+                #         if [ ! -z \$exists ]; then
+                #             git checkout aprende_400_features;
+                #             git reset --hard HEAD;
+                #             cd - > /dev/null;
+                #             aprende=\$(git config -f .gitmodules --default false --get submodule.\$sm_path.aprende);
+                #             cd - > /dev/null;
+                #             if [ \$aprende = "true" ]; then
+                #                 git pull --rebase origin master;
+                #                 # git pull --rebase origin master && git push origin HEAD;
+                #             fi;
+                #             echo
+                #         fi;
+                #     "
+                # fi
 
                 # Otherwise, leave repos on default branches.
             fi
