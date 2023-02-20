@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
 
-# Read and set environment variables.
-if [ -f ~/moodle-docker/.env ]; then
-    cd ~
-    export $(cat ~/moodle-docker/.env | xargs | envsubst)
-    export MOODLE_DOCKER_WWWROOT=$MOODLE_DOCKER_WWWROOT/$COMPOSE_PROJECT_NAME
-    cd ~/moodle-docker
-else
-    echo "Cannot find .env file."
-    exit 1
-fi
-
 # Check if Docker is available.
 docker-compose --version 2>/dev/null
 if [ $? -ne 0 ]; then
@@ -26,7 +15,50 @@ if [ $? -ne 0 ]; then
     exit 127
 fi
 
-action=$1
+if [ $# -ne 0 ]; then
+    action=$1
+    if [ "$action" = "reset" ]; then
+        while :; do
+            clear
+            echo "Select a Moodle version..."
+            echo "1 : Moodle 3.11"
+            echo "2 : Moodle 4.0"
+            echo "3 : Moodle 4.1"
+            echo "0 : No change"
+            echo ""
+            read -p "Enter option between 0 and 3: " release
+            [[ $release =~ ^[0-9]+$ ]] || { release=-1; }
+            if (($release >= 0 && $release <= 3)); then
+                case $release in
+                    1)
+                        cp 311.env .env
+                        ;;
+                    2)
+                        cp 400.env .env
+                        ;;
+                    3)
+                        cp 401.env .env
+                        ;;
+                esac
+                break 2
+            else
+                echo ""
+                read -p "Error: Invalid option selected. Press ENTER and try again."
+            fi
+        done
+    fi
+fi
+
+# Read and set environment variables.
+if [ -f ~/moodle-docker/.env ]; then
+    cd ~
+    export $(cat ~/moodle-docker/.env | xargs | envsubst)
+    export MOODLE_DOCKER_WWWROOT=$MOODLE_DOCKER_WWWROOT/$COMPOSE_PROJECT_NAME
+    cd ~/moodle-docker
+else
+    echo "Cannot find .env file."
+    exit 1
+fi
 
 case $action in
     start)
@@ -124,8 +156,13 @@ case $action in
 
         shift
 
-        rebuild="N"
-        if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
+        if [ $release -eq 0 ]; then
+            rebuild="N"
+        else
+            # Force rebuild if chose to change the release of Moodle.""
+            rebuild="Y"
+        fi
+        if [ -d "$MOODLE_DOCKER_WWWROOT" ] && [ "$rebuild" = "N" ]; then
             echo "Existing Moodle application directory detected."
             while true; do
                 read -p "Do you want re-create it (slower and destructive) again? (y/n) " rebuild
@@ -193,7 +230,7 @@ case $action in
                 # Install some additional development tools.
                 if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.1" ]; then
                     # For Moodle 4.1+.
-                    git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel\
+                    git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
                 else
                     # For Moodle less than 4.1.
                     git clone --branch 1.5.3 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
