@@ -37,6 +37,9 @@ $CFG->admin     = 'admin';
 $CFG->directorypermissions = 0777;
 $CFG->smtphosts = 'mailhog:1025';
 
+// Removes Your Site Is Not Registered and Register Your Site button from Site Administration.
+$CFG->site_is_public = false;
+
 // Debug options - possible to be controlled by flag in future..
 $CFG->debug = (E_ALL | E_STRICT); // DEBUG_DEVELOPER
 $CFG->debugdisplay = 1;
