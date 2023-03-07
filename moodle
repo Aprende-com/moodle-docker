@@ -348,6 +348,7 @@ case $action in
             echo "- moosh                       See https://moosh-online.com/ for details."
             echo "- composer"
             echo "- python3"
+            echo "- nvm / npm / node"
             echo ""
         fi
         echo "Useful URLs:"
