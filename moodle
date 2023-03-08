@@ -228,17 +228,20 @@ case $action in
 
             if [ "$REPO" = "Aprende-com/moodle-dev.git" ]; then
                 # Install some additional development tools.
-                if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.1" ]; then
+                if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "3.11" ]; then
+                    # For Moodle 3.11.
+                    git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
+                    git clone --branch 1.5.3 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                elif [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.0" ]; then
+                    # For Moodle 4.0.
+                    git clone --branch 1.5.3 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                else
                     # For Moodle 4.1+.
                     git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
-                else
-                    # For Moodle less than 4.1.
-                    git clone --branch 1.5.3 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
                 fi
-                # git clone https://github.com/moodlehq/moodle-local_codechecker.git $MOODLE_DOCKER_WWWROOT/local/codechecker
-                git clone https://github.com/moodlehq/moodle-local_moodlecheck $MOODLE_DOCKER_WWWROOT/local/moodlecheck
-                git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/admin/tool/themetester
-                git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
+                # These two plugin cause grunt errors:
+                # git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/admin/tool/themetester
+                # git clone https://github.com/gjb2048/moodle-block_theme_selector.git $MOODLE_DOCKER_WWWROOT/blocks/theme_selector
                 git clone https://github.com/grabs/moodle-local_adminer.git $MOODLE_DOCKER_WWWROOT/local/adminer
                 git clone git@github.com:Aprende-com/moodle_development_kit.git $MOODLE_DOCKER_WWWROOT/adk
             fi
