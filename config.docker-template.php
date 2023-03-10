@@ -40,6 +40,9 @@ $CFG->smtphosts = 'mailhog:1025';
 // Removes Your Site Is Not Registered and Register Your Site button from Site Administration.
 $CFG->site_is_public = false;
 
+// Limits the number of courses shown to the user in the navigation to 1 course.
+$CFG->navcourselimit = 1;
+
 // Debug options - possible to be controlled by flag in future..
 $CFG->debug = (E_ALL | E_STRICT); // DEBUG_DEVELOPER
 $CFG->debugdisplay = 1;
