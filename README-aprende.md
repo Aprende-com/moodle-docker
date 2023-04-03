@@ -8,16 +8,18 @@ Moodle Docker Aprende is a fully containerized environment for developing the Ap
 * Apache
 * PHP
 * MariaDB
-* Composer
-* Aprende Moodle Development Kit
-* Moosh
+* adk (Aprende Moodle Development Kit)
 * Bash
-* phpMyAdmin
-* MailHog
-* Selenium
-* Pseudo Cron
-* Python 3.9
+* Composer
 * Graphviz
+* MailHog
+* Moosh
+* phpMyAdmin
+* PHPUnit
+* Pseudo Cron
+* PsySH
+* Python 3.9
+* Selenium
 * Spanish (Mexico) language packs
 * All themes and plugins (including images) used in the Aprende LMS.
 * A set of test users (see list below)
@@ -30,7 +32,6 @@ The following development-related plugins also come pre-installed:
 * pluginskel
 * codechecker
 * moodlecheck
-* themetester
 * theme_selector
 * adminer
 
@@ -64,25 +65,20 @@ Open a shell prompt. On Windows, start WSL2 by running the WSL command. Then:
     cd moodle-docker
     chmod +x moodle
 
-Before you run the following command, it is important to understand that, if you already have a directory called ~/moodle, it will be deleted and replaced.But don't worry, you will be prompted before this happens.
+Before you run the following command, it is important to understand that, if you already have a directory called ~/moodle, it will be deleted and replaced.
+
+*You will be prompted before this happens.*
 
 To start the environment, run:
 
 ./moodle reset
 
-The process will take about 15 minutes depending on the speed of your computer.
+You will be prompted for:
 
-## Option: Try Moodle 3.11
+* The version of Moodle that you want to install
+* Your sudo password.
 
-If you want to try out a plain installation of Moodle 3.11 core with PHP 7.4, simply replace "--branch aprende" in the instructions above with "--branch MOODLE_311_STABLE". Note that Moodle will be installed in a directory called "~/moodle311" instead of "~/moodle".
-
-## Option: Try Moodle 4.0
-
-If you want to try out a plain installation of Moodle 4.0 core with PHP 8.0, simply replace "--branch aprende" in the instructions above with "--branch MOODLE_400_STABLE". Note that Moodle will be installed in a directory called "~/moodle400" instead of "~/moodle".
-
-## Option: Try Moodle 4.1
-
-If you want to try out a plain installation of Moodle 4.1 core with PHP 8.0, simply replace "--branch aprende" in the instructions above with "--branch MOODLE_401_STABLE". Note that Moodle will be installed in a directory called "~/moodle401" instead of "~/moodle".
+The process will take about 30 minutes depending on the speed of your computer.
 
 # Using Moodle-Docker-Aprende
 
@@ -101,16 +97,22 @@ You can see the following list of CLI tools anytime by using the "./moodle help"
 | ./moodle start           | Start a container.                                    |
 | ./moodle stop            | Stop a container without loosing data.                |
 | ./moodle status          | List of running container.                            |
+| ./moodle logs            | View logs from the Moodle Webserver.                  |
 | ./moodle update          | Update running container with latest code changes.    |
 | ./moodle [other command] | Run the command on the webserver.                     |
 | **From inside the container:**                                                   |
+| adk                      | See https://github.com/Aprende-com/moodle_development_kit. "
 | moosh                    | See https://moosh-online.com/ for details.            |
 | composer                 |                                                       |
+| python3                  |                                                       |
+| nvm / npm / node         |                                                       |
+| phpunit                  | Run phpunit on complete instance of Moodle.           |
+| psysh                    | Run PshySH in Moodle.                                 |
 
 ## Useful URLs
 
-| URL                         | Description                |
-|-----------------------------|----------------------------|
+| URL                         | Description                 |
+|-----------------------------|-----------------------------|
 | http://localhost:8000       | Access the Moodle LMS site. |
 | http://localhost:8025       | Access the MailHog site.    |
 | http://localhost:8080/admin | Access the Keycloak site.   |
