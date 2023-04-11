@@ -71,7 +71,7 @@ Before you run the following command, it is important to understand that, if you
 
 To start the environment, run:
 
-./moodle reset
+bash moodle reset
 
 You will be prompted for:
 
@@ -82,32 +82,32 @@ The process will take about 30 minutes depending on the speed of your computer.
 
 # Using Moodle-Docker-Aprende
 
-You can see the following list of CLI tools anytime by using the "./moodle help" command.
+You can see the following list of CLI tools anytime by using the "bash moodle help" command.
 
 ## Some Useful Commands
 
-| Command                  | Description                                           |
-|--------------------------|-------------------------------------------------------|
-| ./moodle                 | Access the Bash command line on webserver as root.    |
-| ./moodle help            | Display this help.                                    |
-| ./moodle db              | Access the MySQL (MariaDB) command line as root user. |
-| ./moodle up              | Builds and starts websites. See URLs below.           |
-| ./moodle down            | Shutdown a container.                                 |
-| ./moodle reset           | Builds and starts websites. Will result in deletion of all data. See URLs below. |
-| ./moodle start           | Start a container.                                    |
-| ./moodle stop            | Stop a container without loosing data.                |
-| ./moodle status          | List of running container.                            |
-| ./moodle logs            | View logs from the Moodle Webserver.                  |
-| ./moodle update          | Update running container with latest code changes.    |
-| ./moodle [other command] | Run the command on the webserver.                     |
-| **From inside the container:**                                                   |
-| adk                      | See https://github.com/Aprende-com/moodle_development_kit. "
-| moosh                    | See https://moosh-online.com/ for details.            |
-| composer                 |                                                       |
-| python3                  |                                                       |
-| nvm / npm / node         |                                                       |
-| phpunit                  | Run phpunit on complete instance of Moodle.           |
-| psysh                    | Run PshySH in Moodle.                                 |
+| Command                     | Description                                           |
+|-----------------------------|-------------------------------------------------------|
+| bash moodle                 | Access the Bash command line on webserver as root.    |
+| bash moodle help            | Display this help.                                    |
+| bash moodle db              | Access the MySQL (MariaDB) command line as root user. |
+| bash moodle up              | Builds and starts websites. See URLs below.           |
+| bash moodle down            | Shutdown a container.                                 |
+| bash moodle reset           | Builds and starts websites. Will result in deletion of all data. See URLs below. |
+| bash moodle start           | Start a container.                                    |
+| bash moodle stop            | Stop a container without loosing data.                |
+| bash moodle status          | List of running container.                            |
+| bash moodle logs            | View logs from the Moodle Webserver.                  |
+| bash moodle update          | Update running container with latest code changes.    |
+| bash moodle [other command] | Run the command on the webserver.                     |
+| **From inside the container:**                                                      |
+| adk                         | See https://github.com/Aprende-com/moodle_development_kit. |"
+| moosh                       | See https://moosh-online.com/ for details.            |
+| composer                    |                                                       |
+| python3                     |                                                       |
+| nvm / npm / node            |                                                       |
+| phpunit                     | Run phpunit on complete instance of Moodle.           |
+| psysh                       | Run PshySH in Moodle.                                 |
 
 ## Useful URLs
 

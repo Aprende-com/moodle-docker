@@ -63,13 +63,13 @@ fi
 case $action in
     start)
         bin/moodle-docker-compose start
-        echo "Use './moodle stop' to pause the docker containers or './moodle help' for more information."
-        ./moodle help
+        echo "Use 'bash moodle stop' to pause the docker containers or 'bash moodle help' for more information."
+        source moodle help
         exit 0
         ;;
     stop)
         bin/moodle-docker-compose stop
-        echo "Use './moodle start' to resume operation of docker containers or './moodle help' for more information."
+        echo "Use 'bash moodle start' to resume operation of docker containers or 'bash moodle help' for more information."
         exit 0
         ;;
     uninstall)
@@ -93,7 +93,7 @@ case $action in
             if [ -d "$MOODLE_DOCKER_WWWROOT" ]; then
                 echo "Deleting the Moodle application directory..."
                 sudo rm -rf $MOODLE_DOCKER_WWWROOT
-                echo "Use './moodle reset' to build, or './moodle help' for more information."
+                echo "Use 'bash moodle reset' to build, or 'bash moodle help' for more information."
             fi
         fi
         ;;
@@ -101,7 +101,7 @@ case $action in
         bin/moodle-docker-compose stop
         bin/moodle-docker-compose down --remove-orphans
         docker network prune -f
-        echo "Use './moodle up' to restart, './moodle reset' to rebuild, or './moodle help' for more information."
+        echo "Use 'bash moodle up' to restart, 'bash moodle reset' to rebuild, or 'bash moodle help' for more information."
         exit 0
         ;;
     status)
@@ -126,7 +126,7 @@ case $action in
         popd > /dev/null
         echo "Done."
         echo "IMPORTANT: Be sure to login and go to Notifications to update the database."
-        ./moodle start
+        source moodle start
         exit 0
         ;;
     up)
@@ -139,7 +139,7 @@ case $action in
             bin/moodle-docker-compose start
         else
             echo "There are no existing containers and volumes for project ${COMPOSE_PROJECT_NAME})."
-            echo "You need to run ./moodle reset first."
+            echo "You need to run 'bash moodle reset' first."
         fi
         ;;
     reset)  # Reset docker build..
@@ -331,18 +331,18 @@ case $action in
         ;;
     help)
         echo "Some useful commands:"
-        echo "- ./moodle                    Access the Bash command line on webserver as root."
-        echo "- ./moodle help               Display this help."
-        echo "- ./moodle db                 Access the MySQL (MariaDB) command line as root user."
-        echo "- ./moodle up                 Starts current build. If none exist, will start new build. See URLs below."
-        echo "- ./moodle down               Shutdown a container."
-        echo "- ./moodle reset              Builds and starts websites. Will result in deletion of all data. See URLs below."
-        echo "- ./moodle start              Start a container."
-        echo "- ./moodle stop               Stop a container without loosing data."
-        echo "- ./moodle status             List of running containers."
-        echo "- ./moodle logs               View logs from the Moodle Webserver."
-        echo "- ./moodle update             Update running containers with latest code changes."
-        echo "- ./moodle [other command]    Run the command on the webserver."
+        echo "- bash moodle                    Access the Bash command line on webserver as root."
+        echo "- bash moodle help               Display this help."
+        echo "- bash moodle db                 Access the MySQL (MariaDB) command line as root user."
+        echo "- bash moodle up                 Starts current build. If none exist, will start new build. See URLs below."
+        echo "- bash moodle down               Shutdown a container."
+        echo "- bash moodle reset              Builds and starts websites. Will result in deletion of all data. See URLs below."
+        echo "- bash moodle start              Start a container."
+        echo "- bash moodle stop               Stop a container without loosing data."
+        echo "- bash moodle status             List of running containers."
+        echo "- bash moodle logs               View logs from the Moodle Webserver."
+        echo "- bash moodle update             Update running containers with latest code changes."
+        echo "- bash moodle [other command]    Run the command on the webserver."
         echo ""
         if [ "${MOODLE_DOCKER_MOODLE_REPO}" = "Aprende-com/moodle-dev.git" ]; then
             echo "From inside the container:"
