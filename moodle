@@ -24,6 +24,7 @@ if [ $# -ne 0 ]; then
             echo "1 : Moodle 3.11"
             echo "2 : Moodle 4.0"
             echo "3 : Moodle 4.1"
+            echo "4 : Moodle master"
             echo "0 : No change"
             echo ""
             read -p "Enter option between 0 and 3: " release
@@ -38,6 +39,9 @@ if [ $# -ne 0 ]; then
                         ;;
                     3)
                         cp 401.env .env
+                        ;;
+                    4)
+                        cp master.env .env
                         ;;
                 esac
                 break 2
@@ -237,7 +241,7 @@ case $action in
                     git clone --branch 1.5.3 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
                 else
                     # For Moodle 4.1+.
-                    git clone https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
+                    git clone --branch 1.6.0 https://github.com/mudrd8mz/moodle-tool_pluginskel.git $MOODLE_DOCKER_WWWROOT/admin/tool/pluginskel
                 fi
                 # These two plugin cause grunt errors:
                 # git clone https://github.com/davidscotson/moodle-tool_themetester.git $MOODLE_DOCKER_WWWROOT/admin/tool/themetester
@@ -262,13 +266,25 @@ case $action in
                     "
                 fi
 
-                if [ "$MOODLE_DOCKER_MOODLE_VERSION" = "4.0" ]; then
-                    # Apply aprende_4005_dev branch if it exists and rebase it using latest in master for aprende-owned plugins.
+                if [ "$MOODLE_DOCKER_MOODLE_VERSION" != "3.11" ]; then
+                    # Apply aprende_4005_dev and aprende_401_dev branch if it exists and rebase it using latest in master for aprende-owned plugins.
                     git submodule foreach "
                         git fetch origin;
                         exists=\$(git branch -r --list origin/aprende_4005_dev);
                         if [ ! -z \$exists ]; then
                             git checkout aprende_4005_dev;
+                            git reset --hard HEAD;
+                            cd - > /dev/null;
+                            aprende=\$(git config -f .gitmodules --default false --get submodule.\$sm_path.aprende);
+                            cd - > /dev/null;
+                            if [ \$aprende = "true" ]; then
+                                git pull --rebase origin master;
+                            fi;
+                            echo
+                        fi;
+                        exists=\$(git branch -r --list origin/aprende_401_dev);
+                        if [ ! -z \$exists ]; then
+                            git checkout aprende_401_dev;
                             git reset --hard HEAD;
                             cd - > /dev/null;
                             aprende=\$(git config -f .gitmodules --default false --get submodule.\$sm_path.aprende);
