@@ -21,10 +21,11 @@ if [ $# -ne 0 ]; then
         while :; do
             clear
             echo "Select a Moodle version..."
-            echo "1 : Moodle 3.11"
-            echo "2 : Moodle 4.0"
-            echo "3 : Moodle 4.1"
-            echo "4 : Moodle master"
+            echo "1 : Moodle 3.11 (aprende)"
+            echo "2 : Moodle 4.0 (aprende)"
+            echo "3 : Moodle 4.1 (aprende)"
+            echo "4 : Moodle 4.2 (moodle.org)"
+            echo "5 : Moodle master (moodle.org)"
             echo "0 : No change"
             echo ""
             read -p "Enter option between 0 and 3: " release
@@ -41,6 +42,9 @@ if [ $# -ne 0 ]; then
                         cp 401.env .env
                         ;;
                     4)
+                        cp 402.env .env
+                        ;;
+                    5)
                         cp master.env .env
                         ;;
                 esac
@@ -332,7 +336,7 @@ case $action in
             fi
             git clone git@github.com:Aprende-com/moodle-docker-assets.git $MOODLE_DOCKER_WWWROOT/assets
             docker exec -ti $COMPOSE_PROJECT_NAME-webserver mv /var/www/html/assets /tmp/
-            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash -c /tmp/assets/mdl-init.sh $MOODLE_DOCKER_MOODLE_VERSION /var/www/moodledata
+            docker exec -ti $COMPOSE_PROJECT_NAME-webserver bash -c /tmp/assets/mdl-init.sh "$MOODLE_DOCKER_MOODLE_VERSION" "/var/www/moodledata"
         else
             docker exec -ti $COMPOSE_PROJECT_NAME-webserver php admin/cli/install_database.php --lang="en" --adminuser="admin" --adminpass="moodle" --adminemail="admin@local.localhost" --agree-license --fullname="Aprende $MOODLE_DOCKER_MOODLE_VERSION Local DEV" --shortname="Moodle DEV $MOODLE_DOCKER_MOODLE_VERSION"
         fi
